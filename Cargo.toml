@@ -1,0 +1,19 @@
+[package]
+name = "dispatch"
+version = "0.1.0"
+edition = "2021"
+authors = ["1443965173@qq.com"]
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+tokio = {version = "1",feature = ["full"]}
+wd_run = "0.2.1"
+wd_log = "0.1.5"
+
+[build-dependencies]
+tonic-build = {version = "0.5",features=["prost","compression"]}
+
+[[bin]] # pb 构建
+name = "grpc-build"
+path = "src/pb/build.rs"

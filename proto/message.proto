@@ -1,0 +1,15 @@
+syntax = "proto3";
+package pb;
+import "google/protobuf/struct.proto";
+
+enum TaskType{
+  Timer = 0;
+  Dispatch = 1;
+}
+
+message Task{
+  string id = 1;
+  string name = 2;
+  string description = 3; //描述
+   TaskType type = 4;
+}
