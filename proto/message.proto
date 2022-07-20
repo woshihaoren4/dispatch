@@ -1,15 +1,85 @@
 syntax = "proto3";
 package pb;
 import "google/protobuf/struct.proto";
+import "google/protobuf/timestamp.proto";
 
 enum TaskType{
-  Timer = 0;
-  Dispatch = 1;
+  Batch = 0;
+  Timing = 1;
+  Election = 2;
+}
+message BatchContent{
+  uint32 total = 1;
+  uint32 group = 2;
+  google.protobuf.Timestamp start_time = 3;
+  google.protobuf.Timestamp end_time = 4;
+  int64 retry_interval = 5;
+}
+
+message TimingContent{
+  uint32 total = 1;
+  uint32 group = 2;
+  int64 max_duration = 3; //每次执行的最长时间
+  string interval = 4; //循环间隔 linux表示法"* * * * *"
+  int64 retry_interval = 5;
+}
+
+message ElectionContent{
+  uint32 group = 1;   //分组
+  int64 cycle_interval = 2; //周期
+}
+
+enum TaskStatus{
+  TaskStatus_CREATE = 0;
+  TaskStatus_INITIALIZED = 1;
+  TaskStatus_LAUNCHING = 2;
+  TaskStatus_STOP = 3;
+  TaskStatus_OVER = 4;
 }
 
 message Task{
   string id = 1;
   string name = 2;
   string description = 3; //描述
-   TaskType type = 4;
+  google.protobuf.Timestamp create_time = 4;
+  TaskType type = 5;
+  TaskStatus status = 6;
+  bytes config = 7; //任务触发的时候会传递给执行者
+  oneof Content{
+    BatchContent batch_ctx = 100;
+    TimingContent timing_ctx = 101;
+    ElectionContent election_ctx = 102;
+  }
+  repeated SubTask sub_tasks = 8; //如果创建任务时指定子任务，则直接初始化完成
+}
+
+enum SubTaskStatus{
+  SubTaskStatus_CREATE = 0;
+  SubTaskStatus_DISPATCH = 1;
+  SubTaskStatus_COMPLETE = 2;
+  SubTaskStatus_FAILED = 3; //失败  不再重新调度
+}
+
+message SubTask{
+  string id = 1;
+  string name = 2;
+  string description = 3;
+  SubTaskStatus status = 4;
+  uint32 group_id = 5; //分组id
+  google.protobuf.Timestamp create_time = 6;
+  google.protobuf.Timestamp last_dispatch_time = 7; //上次被调度的时间
+  uint32 version = 8; //版本号，随着调度次数增加
+  string extern = 9; //扩展信息
+}
+
+//----------------interface common struct-----------------
+
+message CommonResponse{
+  CommonResult result = 1;
+}
+message CommonResult{
+  //200 ：success
+  int32 code = 1;
+  string message = 2;
+  google.protobuf.Struct payload = 3;
 }

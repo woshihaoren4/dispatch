@@ -1,0 +1,79 @@
+syntax = "proto3";
+package pb;
+import "message.proto";
+import "google/api/annotations.proto";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/struct.proto";
+
+service TaskManagerService {
+  rpc CreateTask(CreateTaskRequest) returns (CreateTaskResponse){
+    option (google.api.http) = {
+      post: "/api/v1/dispatch/task/create"
+      body: "*"
+    };
+  }
+  rpc UpdateTask(UpdateTaskRequest) returns(UpdateTaskResponse){
+    option (google.api.http) = {
+      post: "/api/v1/dispatch/task/{task_id}/update/{action}"
+      body: "*"
+    };
+  }
+  rpc SearchTask(SearchTaskRequest)returns(SearchTaskResponse){
+    option (google.api.http) = {
+      post: "/api/v1/dispatch/task/search"
+      body: "*"
+    };
+  }
+}
+message CreateTaskRequest {
+  Task task = 1;
+}
+message CreateTaskResponse{
+  string task_id = 1;
+  google.protobuf.Timestamp create_time = 2;
+  CommonResult result = 100;
+}
+enum UpdateTaskAction {
+  UPDATE_STATUS = 0;
+  UPDATE_TASK_INFO = 1;
+  APPEND_SUBTASKS = 2;
+  UPDATE_SUBTASK_INFO = 3;
+}
+
+message UpdateTaskInfoValue{
+  map<string, google.protobuf.Value> values = 1;
+}
+message UpdateSubTask{
+  repeated SubTask sub_tasks = 1;
+}
+message UpdateSubTaskInfoValue{
+  string sub_task_id = 1;
+  map<string, google.protobuf.Value> values = 2;
+}
+message UpdateTaskRequest{
+  string task_id = 1;
+  UpdateTaskAction action = 2;
+  oneof update_content{
+    TaskStatus status = 100;
+    UpdateTaskInfoValue task_values = 101;
+    UpdateSubTask sub_tasks = 102;
+    UpdateSubTaskInfoValue sub_task_values = 103;
+  }
+  map<string, int32> aa = 22;
+}
+message UpdateTaskResponse{
+  CommonResult result = 100;
+}
+message SearchTaskRequest{
+  string task_id = 1;
+  string name = 2;
+  TaskType type = 3;
+  google.protobuf.Timestamp start_time = 5;
+  google.protobuf.Timestamp end_time = 6;
+
+  bool contain_child = 7;
+
+}
+message SearchTaskResponse{
+
+}
