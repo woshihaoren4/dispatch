@@ -1,19 +1,31 @@
 [package]
 name = "dispatch"
 version = "0.1.0"
-edition = "2021"
+edition = "2018"
 authors = ["1443965173@qq.com"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-tokio = {version = "1",feature = ["full"]}
+tokio = {version = "1",features  = ["full"]}
 wd_run = "0.2.1"
 wd_log = "0.1.5"
+async-trait = "0.1"
+tonic = { version = "0.6", features = ["tls","compression"] }
+prost = "0.9"
+prost-types = "0.9"
+chrono = "0.4"
+tower = "0.4"
+hyper = { version = "0.14", features = ["full"] }
+futures = { version = "0.3", default-features = false, features = ["alloc"] }
 
 [build-dependencies]
-tonic-build = {version = "0.5",features=["prost","compression"]}
+tonic-build = {version = "0.6",features=["prost","compression"]}
 
 [[bin]] # pb 构建
-name = "grpc-build"
-path = "src/pb/build.rs"
+name = "build-proto"
+path = "src/build_grpc.rs"
+
+[[bin]] # pb 构建
+name = "server"
+path = "src/server.rs"

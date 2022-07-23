@@ -11,17 +11,19 @@ enum TaskType{
 message BatchContent{
   uint32 total = 1;
   uint32 group = 2;
-  google.protobuf.Timestamp start_time = 3;
-  google.protobuf.Timestamp end_time = 4;
-  int64 retry_interval = 5;
+  bool async = 3; //是否是异步 不关心放回结果
+  google.protobuf.Timestamp start_time = 4;
+  google.protobuf.Timestamp end_time = 5;
+  int64 retry_interval = 6;
 }
 
 message TimingContent{
   uint32 total = 1;
   uint32 group = 2;
-  int64 max_duration = 3; //每次执行的最长时间
-  string interval = 4; //循环间隔 linux表示法"* * * * *"
-  int64 retry_interval = 5;
+  bool async = 3; //是否是异步 不关心放回结果
+  int64 max_duration = 4; //每次执行的最长时间
+  string interval = 5; //循环间隔 linux表示法"* * * * *"
+  int64 retry_interval = 6;
 }
 
 message ElectionContent{
@@ -30,11 +32,12 @@ message ElectionContent{
 }
 
 enum TaskStatus{
-  TaskStatus_CREATE = 0;
+  TaskStatus_CREATED = 0;
   TaskStatus_INITIALIZED = 1;
   TaskStatus_LAUNCHING = 2;
   TaskStatus_STOP = 3;
   TaskStatus_OVER = 4;
+  TaskStatus_CLOSE = 5;
 }
 
 message Task{

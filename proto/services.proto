@@ -70,10 +70,9 @@ message SearchTaskRequest{
   TaskType type = 3;
   google.protobuf.Timestamp start_time = 5;
   google.protobuf.Timestamp end_time = 6;
-
   bool contain_child = 7;
-
 }
 message SearchTaskResponse{
-
+  repeated Task tasks = 1;
+  CommonResult result = 100;
 }

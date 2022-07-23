@@ -1,0 +1,23 @@
+syntax = "proto3";
+package hello;
+import "google/api/annotations.proto";
+import "google/protobuf/struct.proto";
+
+service say{
+	rpc SayHello(HelloRequest) returns (HelloResponse){
+	    option (google.api.http) = {
+          post: "/api/v2/rust_grpc/say_hello"
+          body: "*"
+        };
+	}
+}
+
+message HelloRequest{
+	string value = 1;
+	google.protobuf.Struct content = 2;
+}
+
+message HelloResponse{
+	string value = 1;
+	google.protobuf.Struct content = 2;
+}
