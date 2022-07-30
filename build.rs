@@ -4,7 +4,7 @@ fn main() {
         .file_descriptor_set_path("./src/pb/services_descriptor.bin")
         // .type_attribute("hello.HelloResponse","#[derive(serde::Serialize,serde::Deserialize)]")
         // .type_attribute("hello.HelloRequest","#[derive(serde::Serialize,serde::Deserialize)]")
-        .compile(&["./proto/message.proto","./proto/services.proto",],&["proto"])
+        .compile(&["./proto/message.proto","./proto/task_services.proto",],&["proto"])
         .unwrap();
 
     // tonic_build::configure()

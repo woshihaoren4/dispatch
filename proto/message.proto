@@ -1,7 +1,6 @@
 syntax = "proto3";
 package pb;
 import "google/protobuf/struct.proto";
-import "google/protobuf/timestamp.proto";
 
 enum TaskType{
   Batch = 0;
@@ -12,8 +11,8 @@ message BatchContent{
   uint32 total = 1;
   uint32 group = 2;
   bool async = 3; //是否是异步 不关心放回结果
-  google.protobuf.Timestamp start_time = 4;
-  google.protobuf.Timestamp end_time = 5;
+  string start_time = 4;
+  string end_time = 5;
   int64 retry_interval = 6;
 }
 
@@ -41,10 +40,10 @@ enum TaskStatus{
 }
 
 message Task{
-  string id = 1;
-  string name = 2;
+  string task_id = 1;
+  string task_name = 2;
   string description = 3; //描述
-  google.protobuf.Timestamp create_time = 4;
+  string create_time = 4;
   TaskType type = 5;
   TaskStatus status = 6;
   bytes config = 7; //任务触发的时候会传递给执行者
@@ -58,21 +57,25 @@ message Task{
 
 enum SubTaskStatus{
   SubTaskStatus_CREATE = 0;
-  SubTaskStatus_DISPATCH = 1;
+  SubTaskStatus_DISPATCHING = 1;
   SubTaskStatus_COMPLETE = 2;
   SubTaskStatus_FAILED = 3; //失败  不再重新调度
 }
 
 message SubTask{
-  string id = 1;
-  string name = 2;
+  string sub_task_id = 1;
+  string sub_task_name = 2;
   string description = 3;
   SubTaskStatus status = 4;
   uint32 group_id = 5; //分组id
-  google.protobuf.Timestamp create_time = 6;
-  google.protobuf.Timestamp last_dispatch_time = 7; //上次被调度的时间
+  string create_time = 6;
+  string last_dispatch_time = 7; //上次被调度的时间
   uint32 version = 8; //版本号，随着调度次数增加
   string extern = 9; //扩展信息
+}
+
+message Worker{
+  string id = 1; //工人的唯一标识
 }
 
 //----------------interface common struct-----------------
@@ -81,8 +84,7 @@ message CommonResponse{
   CommonResult result = 1;
 }
 message CommonResult{
-  //200 ：success
-  int32 code = 1;
+  int32 code = 1;   //200 ：success
   string message = 2;
   google.protobuf.Struct payload = 3;
 }

@@ -2,35 +2,45 @@ syntax = "proto3";
 package pb;
 import "message.proto";
 import "google/api/annotations.proto";
-import "google/protobuf/timestamp.proto";
 import "google/protobuf/struct.proto";
 
-service TaskManagerService {
+service TaskManager {
+  //创建任务
   rpc CreateTask(CreateTaskRequest) returns (CreateTaskResponse){
     option (google.api.http) = {
-      post: "/api/v1/dispatch/task/create"
+      post: "/api/v1/task/create"
       body: "*"
     };
   }
+  //修改任务
   rpc UpdateTask(UpdateTaskRequest) returns(UpdateTaskResponse){
     option (google.api.http) = {
-      post: "/api/v1/dispatch/task/{task_id}/update/{action}"
+      post: "/api/v1/task/{task_id}/update/{action}"
       body: "*"
     };
   }
+  //查询任务
   rpc SearchTask(SearchTaskRequest)returns(SearchTaskResponse){
     option (google.api.http) = {
-      post: "/api/v1/dispatch/task/search"
+      post: "/api/v1/task/search"
       body: "*"
     };
   }
+  //查询子任务
+  rpc SearchSubTask(SearchSubTaskRequest)returns(SearchSubTaskResponse){
+    option (google.api.http) = {
+      post: "/api/v1/task/search"
+      body: "*"
+    };
+  }
+
 }
 message CreateTaskRequest {
   Task task = 1;
 }
 message CreateTaskResponse{
   string task_id = 1;
-  google.protobuf.Timestamp create_time = 2;
+  string create_time = 2;
   CommonResult result = 100;
 }
 enum UpdateTaskAction {
@@ -59,7 +69,6 @@ message UpdateTaskRequest{
     UpdateSubTask sub_tasks = 102;
     UpdateSubTaskInfoValue sub_task_values = 103;
   }
-  map<string, int32> aa = 22;
 }
 message UpdateTaskResponse{
   CommonResult result = 100;
@@ -68,11 +77,31 @@ message SearchTaskRequest{
   string task_id = 1;
   string name = 2;
   TaskType type = 3;
-  google.protobuf.Timestamp start_time = 5;
-  google.protobuf.Timestamp end_time = 6;
-  bool contain_child = 7;
+  TaskStatus status = 4;
+  string start_time = 5;
+  string end_time = 6;
+  int32 size = 7;
+  int32 page = 8;
+  string sort = 9; //default:"create_time desc"
 }
 message SearchTaskResponse{
   repeated Task tasks = 1;
+  int32 total = 2;
+  CommonResult result = 100;
+}
+message SearchSubTaskRequest{
+  string sub_task_id = 1;
+  string sub_name = 2;
+  string task_id = 3; //父任务的id
+  SubTaskStatus status = 4;
+  string start_time = 5;
+  string end_time = 6;
+  int32 size = 7;
+  int32 page = 8;
+  string sort = 9; //default:"create_time desc"
+}
+message SearchSubTaskResponse{
+  repeated SubTask tasks = 1;
+  int32 total = 2;
   CommonResult result = 100;
 }

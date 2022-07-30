@@ -1,0 +1,49 @@
+syntax = "proto3";
+package pb;
+import "message.proto";
+import "google/api/annotations.proto";
+import "google/protobuf/struct.proto";
+
+service WorkersScheduling{
+  rpc Ping(PingRequest)returns(PingResponse){
+    option (google.api.http) = {
+      post: "/api/v1/work/ping"
+      body: "*"
+    };
+  }
+  //拉取任务
+  rpc PullTask(PullTaskRequest)returns(PullTaskResponse){
+    option (google.api.http) = {
+      post: "/api/v1/work/pull"
+      body: "*"
+    };
+  }
+  //完成任务
+  rpc CompleteSubTask(CompleteSubTaskRequest)returns(CompleteSubTaskResponse){
+    option (google.api.http) = {
+      post: "/api/v1/work/pull"
+      body: "*"
+    };
+  }
+}
+
+message PingRequest{
+  Worker worker = 1;
+}
+message PingResponse{
+  CommonResult result = 255;
+}
+message PullTaskRequest{
+  Worker worker = 1;
+  string task_id = 2;
+}
+message PullTaskResponse{
+  SubTask sub_task = 1;
+  CommonResult result = 255;
+}
+message CompleteSubTaskRequest{
+  string sub_task_id = 1;
+}
+message CompleteSubTaskResponse{
+  CommonResult result = 255;
+}
