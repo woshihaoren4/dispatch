@@ -6,7 +6,6 @@ use std::future::Future;
 
 use tonic::{Status, Response, Request, transport::Server, Code};
 use crate::pb::*;
-use crate::pb::task_manager_service_server::{TaskManagerService, TaskManagerServiceServer};
 use tonic::service::Interceptor;
 use std::sync::atomic::AtomicI32;
 use std::sync::Arc;
@@ -15,6 +14,9 @@ use hyper::Body;
 use tonic::body::BoxBody;
 use std::task::Poll;
 use std::time::Duration;
+use crate::app::middle::{GrpcMiddleInterface, GrpcMiddleLayer};
+use crate::pb::task_manager_server::{TaskManagerServer, TaskManager};
+
 
 pub struct AppRun {}
 
@@ -26,9 +28,9 @@ impl AppRun{
         wd_run::CmdInfo::new("run","running application")
             .add("c","./src/config/config.toml","config file path")
     }
-    pub fn interceptor<S>(&self,service:S)->MyMiddleware<S> {
-        return MyMiddleware { inner: service};
-    }
+    // pub fn interceptor<S>(&self,service:S)->MyMiddleware<S> {
+    //     return MyMiddleware { inner: service};
+    // }
 }
 
 impl wd_run::EventHandle for AppRun{
@@ -37,10 +39,11 @@ impl wd_run::EventHandle for AppRun{
         return Box::pin(async move{
             let layer = tower::ServiceBuilder::new()
                 .timeout(Duration::from_secs(3))
-                .layer(tower::layer::layer_fn(|service|HelloWorld{inner:service,index:10}))
+                .layer(GrpcMiddleLayer::new(Middle))
+                // .layer(tower::layer::layer_fn(|service|HelloWorld{inner:service,index:10}))
                 .layer(tonic::service::interceptor(intercept))
                 .into_inner();
-            let server = TaskManagerServiceServer::new(TaskServerImpl {});
+            let server =TaskManagerServer::new(TaskServerImpl {});
             Server::builder()
                 .layer(layer)
                 .add_service(server)
@@ -54,47 +57,67 @@ impl wd_run::EventHandle for AppRun{
 pub struct TaskServerImpl{}
 
 #[async_trait::async_trait]
-impl TaskManagerService for TaskServerImpl{
+impl TaskManager for TaskServerImpl{
     async fn create_task(&self, request: Request<CreateTaskRequest>) -> Result<Response<CreateTaskResponse>, Status> {
-        Err(Status::new(Code::Unknown,"unknown error:(todo)"))
+        return Err(Status::new(Code::Unknown,"not found"))
     }
 
     async fn update_task(&self, request: Request<UpdateTaskRequest>) -> Result<Response<UpdateTaskResponse>, Status> {
-        Err(Status::new(Code::Unknown,"unknown error:(todo)"))
+        return Err(Status::new(Code::Unknown,"not found"))
     }
 
     async fn search_task(&self, request: Request<SearchTaskRequest>) -> Result<Response<SearchTaskResponse>, Status> {
-        Err(Status::new(Code::Unknown,"unknown error:(todo)"))
+        return Err(Status::new(Code::Unknown,"not found"))
+    }
+
+    async fn search_sub_task(&self, request: Request<SearchSubTaskRequest>) -> Result<Response<SearchSubTaskResponse>, Status> {
+        return Err(Status::new(Code::Unknown,"not found"))
     }
 }
+
 fn intercept(req: Request<()>) -> Result<Request<()>, Status> {
     Ok(req)
 }
 
-#[derive(Debug, Clone)]
-struct MyMiddleware<S> {
-    inner: S,
-}
-impl<S> Service<hyper::Request<Body>> for MyMiddleware<S>
-    where
-        S: Service<hyper::Request<Body>, Response = hyper::Response<BoxBody>> + Clone + Send + 'static,
-        S::Future: Send + 'static,
-{
-    type Response = S::Response;
-    type Error = S::Error;
-    type Future = futures::future::BoxFuture<'static, Result<Self::Response, Self::Error>>;
+struct Middle;
 
-    fn poll_ready(&mut self, cx: &mut std::task::Context<'_>) -> Poll<Result<(), Self::Error>> {
-        self.inner.poll_ready(cx)
+#[async_trait::async_trait]
+impl GrpcMiddleInterface for Middle{
+    async fn request(&self, ctx: Context, req: hyper::Request<Body>) -> Result<hyper::Request<Body>, hyper::Response<BoxBody>> {
+        wd_log::log_info_ln!("-----> request ---------------> start");
+        return Ok(req)
     }
 
-    fn call(&mut self, req: hyper::Request<Body>) -> Self::Future {
-        let clone = self.inner.clone();
-        let mut inner = std::mem::replace(&mut self.inner, clone);
-        Box::pin(async move {
-            // Do extra async work here...
-            let response = inner.call(req).await?;
-            Ok(response)
-        })
+    async fn response(&self, ctx: Context, resp: Option<hyper::Response<BoxBody>>) ->  Option<hyper::Response<BoxBody>> {
+        wd_log::log_info_ln!("-----> request ---------------> end");
+        return resp
     }
 }
+
+// #[derive(Debug, Clone)]
+// struct MyMiddleware<S> {
+//     inner: S,
+// }
+// impl<S> Service<hyper::Request<Body>> for MyMiddleware<S>
+//     where
+//         S: Service<hyper::Request<Body>, Response = hyper::Response<BoxBody>> + Clone + Send + 'static,
+//         S::Future: Send + 'static,
+// {
+//     type Response = S::Response;
+//     type Error = S::Error;
+//     type Future = futures::future::BoxFuture<'static, Result<Self::Response, Self::Error>>;
+//
+//     fn poll_ready(&mut self, cx: &mut std::task::Context<'_>) -> Poll<Result<(), Self::Error>> {
+//         self.inner.poll_ready(cx)
+//     }
+//
+//     fn call(&mut self, req: hyper::Request<Body>) -> Self::Future {
+//         let clone = self.inner.clone();
+//         let mut inner = std::mem::replace(&mut self.inner, clone);
+//         Box::pin(async move {
+//             // Do extra async work here...
+//             let response = inner.call(req).await?;
+//             Ok(response)
+//         })
+//     }
+// }

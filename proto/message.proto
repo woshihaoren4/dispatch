@@ -3,22 +3,20 @@ package pb;
 import "google/protobuf/struct.proto";
 
 enum TaskType{
-  Batch = 0;
-  Timing = 1;
-  Election = 2;
+  Batch = 0; //批处理任务
+  Timing = 1; //定时任务
+  Election = 2; //状态集群任务
 }
 message BatchContent{
   uint32 total = 1;
-  uint32 group = 2;
   bool async = 3; //是否是异步 不关心放回结果
   string start_time = 4;
   string end_time = 5;
-  int64 retry_interval = 6;
+  int64 retry_interval = 6; //超过这个时间后会重试任务
 }
 
 message TimingContent{
   uint32 total = 1;
-  uint32 group = 2;
   bool async = 3; //是否是异步 不关心放回结果
   int64 max_duration = 4; //每次执行的最长时间
   string interval = 5; //循环间隔 linux表示法"* * * * *"
@@ -26,7 +24,7 @@ message TimingContent{
 }
 
 message ElectionContent{
-  uint32 group = 1;   //分组
+  uint32 total = 1;   //分组
   int64 cycle_interval = 2; //周期
 }
 
@@ -47,12 +45,13 @@ message Task{
   TaskType type = 5;
   TaskStatus status = 6;
   bytes config = 7; //任务触发的时候会传递给执行者
+  repeated string tags = 8;
   oneof Content{
     BatchContent batch_ctx = 100;
     TimingContent timing_ctx = 101;
     ElectionContent election_ctx = 102;
   }
-  repeated SubTask sub_tasks = 8; //如果创建任务时指定子任务，则直接初始化完成
+  repeated SubTask sub_tasks = 9; //如果创建任务时指定子任务，则直接初始化完成
 }
 
 enum SubTaskStatus{
@@ -67,7 +66,7 @@ message SubTask{
   string sub_task_name = 2;
   string description = 3;
   SubTaskStatus status = 4;
-  uint32 group_id = 5; //分组id
+  uint32 serial = 5; //序号
   string create_time = 6;
   string last_dispatch_time = 7; //上次被调度的时间
   uint32 version = 8; //版本号，随着调度次数增加

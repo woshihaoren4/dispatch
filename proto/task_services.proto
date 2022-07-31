@@ -33,10 +33,24 @@ service TaskManager {
       body: "*"
     };
   }
-
+}
+message CreateTaskSubTask{
+  string sub_task_name = 2;
+  string description = 3;
+  string extern = 9; //扩展信息
 }
 message CreateTaskRequest {
-  Task task = 1;
+  string task_name = 2;
+  string description = 3; //描述
+  TaskType type = 5;
+  bytes config = 7; //任务触发的时候会传递给执行者
+  repeated string tags = 8;
+  repeated CreateTaskSubTask sub_tasks = 9;
+  oneof Content{
+    BatchContent batch_ctx = 100;
+    TimingContent timing_ctx = 101;
+    ElectionContent election_ctx = 102;
+  }
 }
 message CreateTaskResponse{
   string task_id = 1;
@@ -51,10 +65,13 @@ enum UpdateTaskAction {
 }
 
 message UpdateTaskInfoValue{
+  //name
+  //description
+  //config
   map<string, google.protobuf.Value> values = 1;
 }
-message UpdateSubTask{
-  repeated SubTask sub_tasks = 1;
+message AppendSubTask{
+  repeated CreateTaskSubTask sub_tasks = 1;
 }
 message UpdateSubTaskInfoValue{
   string sub_task_id = 1;
@@ -66,7 +83,7 @@ message UpdateTaskRequest{
   oneof update_content{
     TaskStatus status = 100;
     UpdateTaskInfoValue task_values = 101;
-    UpdateSubTask sub_tasks = 102;
+    AppendSubTask sub_tasks = 102;
     UpdateSubTaskInfoValue sub_task_values = 103;
   }
 }
@@ -94,8 +111,8 @@ message SearchSubTaskRequest{
   string sub_name = 2;
   string task_id = 3; //父任务的id
   SubTaskStatus status = 4;
-  string start_time = 5;
-  string end_time = 6;
+//  string start_time = 5;
+//  string end_time = 6;
   int32 size = 7;
   int32 page = 8;
   string sort = 9; //default:"create_time desc"

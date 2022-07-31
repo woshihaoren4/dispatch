@@ -1,13 +1,21 @@
-syntax = "proto3";
+ syntax = "proto3";
 package pb;
 import "message.proto";
 import "google/api/annotations.proto";
 import "google/protobuf/struct.proto";
 
 service WorkersScheduling{
+  //心跳
   rpc Ping(PingRequest)returns(PingResponse){
     option (google.api.http) = {
       post: "/api/v1/work/ping"
+      body: "*"
+    };
+  }
+  //发现任务
+  rpc FoundTask(FoundTaskRequest)returns(FoundTaskResponse){
+    option (google.api.http) = {
+      post: "/api/v1/work/found"
       body: "*"
     };
   }
@@ -26,7 +34,16 @@ service WorkersScheduling{
     };
   }
 }
-
+message FoundTaskRequest{
+  string tag = 1;
+  int32 size = 2;
+  int32 page = 3;
+  string sort = 4; //default:"create_time desc"
+}
+message FoundTaskResponse{
+  int32 total = 1;
+  repeated Task tasks = 2;
+}
 message PingRequest{
   Worker worker = 1;
 }
