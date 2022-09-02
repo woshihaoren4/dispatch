@@ -1,80 +1,72 @@
 syntax = "proto3";
+
 package pb;
+
+option java_multiple_files = true;
+option java_package = "com.yutiandou.common.proto";
+option java_outer_classname = "Message";
+
 import "google/protobuf/struct.proto";
+
+enum TaskStatus{
+  TaskStatus_CREATED = 0; //新建
+  TaskStatus_INITIALIZED = 1; //初始化完成
+  TaskStatus_LAUNCHING = 2; //开始分发
+  TaskStatus_STOP = 3; //停止
+  TaskStatus_OVER = 4; //结束
+  TaskStatus_CLOSE = 5; //关闭
+}
 
 enum TaskType{
   Batch = 0; //批处理任务
   Timing = 1; //定时任务
   Election = 2; //状态集群任务
 }
-message BatchContent{
-  uint32 total = 1;
-  bool async = 3; //是否是异步 不关心放回结果
-  string start_time = 4;
-  string end_time = 5;
-  int64 retry_interval = 6; //超过这个时间后会重试任务
-}
 
-message TimingContent{
-  uint32 total = 1;
-  bool async = 3; //是否是异步 不关心放回结果
-  int64 max_duration = 4; //每次执行的最长时间
-  string interval = 5; //循环间隔 linux表示法"* * * * *"
-  int64 retry_interval = 6;
-}
-
-message ElectionContent{
-  uint32 total = 1;   //分组
-  int64 cycle_interval = 2; //周期
-}
-
-enum TaskStatus{
-  TaskStatus_CREATED = 0;
-  TaskStatus_INITIALIZED = 1;
-  TaskStatus_LAUNCHING = 2;
-  TaskStatus_STOP = 3;
-  TaskStatus_OVER = 4;
-  TaskStatus_CLOSE = 5;
-}
-
-message Task{
-  string task_id = 1;
+message Task {
+  string task_code = 1;
   string task_name = 2;
   string description = 3; //描述
-  string create_time = 4;
-  TaskType type = 5;
-  TaskStatus status = 6;
-  bytes config = 7; //任务触发的时候会传递给执行者
-  repeated string tags = 8;
-  oneof Content{
-    BatchContent batch_ctx = 100;
-    TimingContent timing_ctx = 101;
-    ElectionContent election_ctx = 102;
-  }
-  repeated SubTask sub_tasks = 9; //如果创建任务时指定子任务，则直接初始化完成
+  int64 start_time = 4;  //utc 开始时间
+  int64 end_time = 5; //utc 结束时间
+  TaskType type = 6;
+  TaskStatus status = 7;
+  string config = 8; //任务触发的时候会传递给执行者
+  repeated string tags = 9;
+  DispatchPolicy policy = 10;
+
+  repeated SubTask sub_tasks = 100; //子任务 被调度的单元
 }
 
 enum SubTaskStatus{
-  SubTaskStatus_CREATE = 0;
-  SubTaskStatus_DISPATCHING = 1;
-  SubTaskStatus_COMPLETE = 2;
+  SubTaskStatus_CREATE = 0; //新建
+  SubTaskStatus_DISPATCHING = 1; //被调度
+  SubTaskStatus_COMPLETE = 2; //完成
   SubTaskStatus_FAILED = 3; //失败  不再重新调度
 }
 
 message SubTask{
-  string sub_task_id = 1;
+  string sub_task_code = 1;
   string sub_task_name = 2;
   string description = 3;
   SubTaskStatus status = 4;
-  uint32 serial = 5; //序号
   string create_time = 6;
   string last_dispatch_time = 7; //上次被调度的时间
   uint32 version = 8; //版本号，随着调度次数增加
   string extern = 9; //扩展信息
 }
+//----------------调度策略-----------------
+
+message DispatchPolicy {
+  string policy_code = 1; //调度策略
+  bool wait_call_back = 2; //是否等待消息回调
+  int64 task_timeout = 3; //任务被调度后，等待确认的超时时间
+}
+
+//----------------- 工人的唯一标识---------------------
 
 message Worker{
-  string id = 1; //工人的唯一标识
+  string code = 1; //工人的唯一标识
 }
 
 //----------------interface common struct-----------------

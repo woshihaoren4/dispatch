@@ -1,94 +1,43 @@
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct BatchContent {
-    #[prost(uint32, tag = "1")]
-    pub total: u32,
-    ///是否是异步 不关心放回结果
-    #[prost(bool, tag = "3")]
-    pub r#async: bool,
-    #[prost(string, tag = "4")]
-    pub start_time: ::prost::alloc::string::String,
-    #[prost(string, tag = "5")]
-    pub end_time: ::prost::alloc::string::String,
-    ///超过这个时间后会重试任务
-    #[prost(int64, tag = "6")]
-    pub retry_interval: i64,
-}
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct TimingContent {
-    #[prost(uint32, tag = "1")]
-    pub total: u32,
-    ///是否是异步 不关心放回结果
-    #[prost(bool, tag = "3")]
-    pub r#async: bool,
-    ///每次执行的最长时间
-    #[prost(int64, tag = "4")]
-    pub max_duration: i64,
-    ///循环间隔 linux表示法"* * * * *"
-    #[prost(string, tag = "5")]
-    pub interval: ::prost::alloc::string::String,
-    #[prost(int64, tag = "6")]
-    pub retry_interval: i64,
-}
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct ElectionContent {
-    ///分组
-    #[prost(uint32, tag = "1")]
-    pub total: u32,
-    ///周期
-    #[prost(int64, tag = "2")]
-    pub cycle_interval: i64,
-}
-#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Task {
     #[prost(string, tag = "1")]
-    pub task_id: ::prost::alloc::string::String,
+    pub task_code: ::prost::alloc::string::String,
     #[prost(string, tag = "2")]
     pub task_name: ::prost::alloc::string::String,
     ///描述
     #[prost(string, tag = "3")]
     pub description: ::prost::alloc::string::String,
-    #[prost(string, tag = "4")]
-    pub create_time: ::prost::alloc::string::String,
-    #[prost(enumeration = "TaskType", tag = "5")]
+    ///utc 开始时间
+    #[prost(int64, tag = "4")]
+    pub start_time: i64,
+    ///utc 结束时间
+    #[prost(int64, tag = "5")]
+    pub end_time: i64,
+    #[prost(enumeration = "TaskType", tag = "6")]
     pub r#type: i32,
-    #[prost(enumeration = "TaskStatus", tag = "6")]
+    #[prost(enumeration = "TaskStatus", tag = "7")]
     pub status: i32,
     ///任务触发的时候会传递给执行者
-    #[prost(bytes = "vec", tag = "7")]
-    pub config: ::prost::alloc::vec::Vec<u8>,
-    #[prost(string, repeated, tag = "8")]
+    #[prost(string, tag = "8")]
+    pub config: ::prost::alloc::string::String,
+    #[prost(string, repeated, tag = "9")]
     pub tags: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
-    ///如果创建任务时指定子任务，则直接初始化完成
-    #[prost(message, repeated, tag = "9")]
+    #[prost(message, optional, tag = "10")]
+    pub policy: ::core::option::Option<DispatchPolicy>,
+    ///子任务 被调度的单元
+    #[prost(message, repeated, tag = "100")]
     pub sub_tasks: ::prost::alloc::vec::Vec<SubTask>,
-    #[prost(oneof = "task::Content", tags = "100, 101, 102")]
-    pub content: ::core::option::Option<task::Content>,
-}
-/// Nested message and enum types in `Task`.
-pub mod task {
-    #[derive(Clone, PartialEq, ::prost::Oneof)]
-    pub enum Content {
-        #[prost(message, tag = "100")]
-        BatchCtx(super::BatchContent),
-        #[prost(message, tag = "101")]
-        TimingCtx(super::TimingContent),
-        #[prost(message, tag = "102")]
-        ElectionCtx(super::ElectionContent),
-    }
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct SubTask {
     #[prost(string, tag = "1")]
-    pub sub_task_id: ::prost::alloc::string::String,
+    pub sub_task_code: ::prost::alloc::string::String,
     #[prost(string, tag = "2")]
     pub sub_task_name: ::prost::alloc::string::String,
     #[prost(string, tag = "3")]
     pub description: ::prost::alloc::string::String,
     #[prost(enumeration = "SubTaskStatus", tag = "4")]
     pub status: i32,
-    ///序号
-    #[prost(uint32, tag = "5")]
-    pub serial: u32,
     #[prost(string, tag = "6")]
     pub create_time: ::prost::alloc::string::String,
     ///上次被调度的时间
@@ -102,10 +51,24 @@ pub struct SubTask {
     pub extern_: ::prost::alloc::string::String,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
+pub struct DispatchPolicy {
+    ///调度策略
+    #[prost(string, tag = "1")]
+    pub policy_code: ::prost::alloc::string::String,
+    ///是否等待消息回调
+    #[prost(bool, tag = "2")]
+    pub wait_call_back: bool,
+    ///任务被调度后，等待确认的超时时间
+    #[prost(int64, tag = "3")]
+    pub task_timeout: i64,
+}
+//----------------- 工人的唯一标识---------------------
+
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Worker {
     ///工人的唯一标识
     #[prost(string, tag = "1")]
-    pub id: ::prost::alloc::string::String,
+    pub code: ::prost::alloc::string::String,
 }
 //----------------interface common struct-----------------
 
@@ -126,6 +89,22 @@ pub struct CommonResult {
 }
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
 #[repr(i32)]
+pub enum TaskStatus {
+    ///新建
+    Created = 0,
+    ///初始化完成
+    Initialized = 1,
+    ///开始分发
+    Launching = 2,
+    ///停止
+    Stop = 3,
+    ///结束
+    Over = 4,
+    ///关闭
+    Close = 5,
+}
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
+#[repr(i32)]
 pub enum TaskType {
     ///批处理任务
     Batch = 0,
@@ -136,19 +115,12 @@ pub enum TaskType {
 }
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
 #[repr(i32)]
-pub enum TaskStatus {
-    Created = 0,
-    Initialized = 1,
-    Launching = 2,
-    Stop = 3,
-    Over = 4,
-    Close = 5,
-}
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
-#[repr(i32)]
 pub enum SubTaskStatus {
+    ///新建
     Create = 0,
+    ///被调度
     Dispatching = 1,
+    ///完成
     Complete = 2,
     ///失败  不再重新调度
     Failed = 3,
@@ -165,51 +137,47 @@ pub struct CreateTaskSubTask {
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct CreateTaskRequest {
-    #[prost(string, tag = "2")]
+    #[prost(string, tag = "1")]
     pub task_name: ::prost::alloc::string::String,
     ///描述
-    #[prost(string, tag = "3")]
+    #[prost(string, tag = "2")]
     pub description: ::prost::alloc::string::String,
-    #[prost(enumeration = "TaskType", tag = "5")]
+    #[prost(enumeration = "TaskType", tag = "3")]
     pub r#type: i32,
     ///任务触发的时候会传递给执行者
-    #[prost(bytes = "vec", tag = "7")]
-    pub config: ::prost::alloc::vec::Vec<u8>,
-    #[prost(string, repeated, tag = "8")]
+    #[prost(string, tag = "4")]
+    pub config: ::prost::alloc::string::String,
+    #[prost(int64, tag = "5")]
+    pub start_time: i64,
+    #[prost(int64, tag = "6")]
+    pub end_time: i64,
+    #[prost(string, repeated, tag = "7")]
     pub tags: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
-    #[prost(message, repeated, tag = "9")]
+    ///todo  DispatchPolicy policy = 10; //超时策略
+    #[prost(message, repeated, tag = "8")]
     pub sub_tasks: ::prost::alloc::vec::Vec<CreateTaskSubTask>,
-    #[prost(oneof = "create_task_request::Content", tags = "100, 101, 102")]
-    pub content: ::core::option::Option<create_task_request::Content>,
-}
-/// Nested message and enum types in `CreateTaskRequest`.
-pub mod create_task_request {
-    #[derive(Clone, PartialEq, ::prost::Oneof)]
-    pub enum Content {
-        #[prost(message, tag = "100")]
-        BatchCtx(super::BatchContent),
-        #[prost(message, tag = "101")]
-        TimingCtx(super::TimingContent),
-        #[prost(message, tag = "102")]
-        ElectionCtx(super::ElectionContent),
-    }
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct CreateTaskResponse {
     #[prost(string, tag = "1")]
-    pub task_id: ::prost::alloc::string::String,
+    pub task_code: ::prost::alloc::string::String,
     #[prost(string, tag = "2")]
     pub create_time: ::prost::alloc::string::String,
     #[prost(message, optional, tag = "100")]
     pub result: ::core::option::Option<CommonResult>,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct UpdateTaskInfoValue {
-    ///name
-    ///description
-    ///config
-    #[prost(map = "string, message", tag = "1")]
-    pub values: ::std::collections::HashMap<::prost::alloc::string::String, ::prost_types::Value>,
+pub struct UpdateTaskInfo {
+    #[prost(string, tag = "2")]
+    pub task_name: ::prost::alloc::string::String,
+    ///描述
+    #[prost(string, tag = "3")]
+    pub description: ::prost::alloc::string::String,
+    ///任务触发的时候会传递给执行者
+    #[prost(string, tag = "7")]
+    pub config: ::prost::alloc::string::String,
+    #[prost(string, repeated, tag = "8")]
+    pub tags: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct AppendSubTask {
@@ -217,16 +185,21 @@ pub struct AppendSubTask {
     pub sub_tasks: ::prost::alloc::vec::Vec<CreateTaskSubTask>,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct UpdateSubTaskInfoValue {
+pub struct UpdateSubTaskInfo {
     #[prost(string, tag = "1")]
-    pub sub_task_id: ::prost::alloc::string::String,
-    #[prost(map = "string, message", tag = "2")]
-    pub values: ::std::collections::HashMap<::prost::alloc::string::String, ::prost_types::Value>,
+    pub sub_task_code: ::prost::alloc::string::String,
+    #[prost(string, tag = "2")]
+    pub sub_task_name: ::prost::alloc::string::String,
+    #[prost(string, tag = "3")]
+    pub description: ::prost::alloc::string::String,
+    ///扩展信息
+    #[prost(string, tag = "4")]
+    pub extern_: ::prost::alloc::string::String,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct UpdateTaskRequest {
     #[prost(string, tag = "1")]
-    pub task_id: ::prost::alloc::string::String,
+    pub task_code: ::prost::alloc::string::String,
     #[prost(enumeration = "UpdateTaskAction", tag = "2")]
     pub action: i32,
     #[prost(
@@ -242,11 +215,11 @@ pub mod update_task_request {
         #[prost(enumeration = "super::TaskStatus", tag = "100")]
         Status(i32),
         #[prost(message, tag = "101")]
-        TaskValues(super::UpdateTaskInfoValue),
+        TaskValues(super::UpdateTaskInfo),
         #[prost(message, tag = "102")]
         SubTasks(super::AppendSubTask),
         #[prost(message, tag = "103")]
-        SubTaskValues(super::UpdateSubTaskInfoValue),
+        SubTaskValues(super::UpdateSubTaskInfo),
     }
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -257,17 +230,18 @@ pub struct UpdateTaskResponse {
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct SearchTaskRequest {
     #[prost(string, tag = "1")]
-    pub task_id: ::prost::alloc::string::String,
+    pub task_code: ::prost::alloc::string::String,
     #[prost(string, tag = "2")]
     pub name: ::prost::alloc::string::String,
     #[prost(enumeration = "TaskType", tag = "3")]
     pub r#type: i32,
     #[prost(enumeration = "TaskStatus", tag = "4")]
     pub status: i32,
-    #[prost(string, tag = "5")]
-    pub start_time: ::prost::alloc::string::String,
-    #[prost(string, tag = "6")]
-    pub end_time: ::prost::alloc::string::String,
+    ///相对创建时间的时间范围
+    #[prost(int64, tag = "5")]
+    pub start_time: i64,
+    #[prost(int64, tag = "6")]
+    pub end_time: i64,
     #[prost(int32, tag = "7")]
     pub size: i32,
     #[prost(int32, tag = "8")]
@@ -288,16 +262,18 @@ pub struct SearchTaskResponse {
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct SearchSubTaskRequest {
     #[prost(string, tag = "1")]
-    pub sub_task_id: ::prost::alloc::string::String,
+    pub sub_task_code: ::prost::alloc::string::String,
     #[prost(string, tag = "2")]
     pub sub_name: ::prost::alloc::string::String,
-    ///父任务的id
+    ///父任务的_code
     #[prost(string, tag = "3")]
-    pub task_id: ::prost::alloc::string::String,
+    pub task_code: ::prost::alloc::string::String,
     #[prost(enumeration = "SubTaskStatus", tag = "4")]
     pub status: i32,
-    ///  string start_time = 5;
-    ///  string end_time = 6;
+    #[prost(int64, tag = "5")]
+    pub start_time: i64,
+    #[prost(int64, tag = "6")]
+    pub end_time: i64,
     #[prost(int32, tag = "7")]
     pub size: i32,
     #[prost(int32, tag = "8")]
@@ -324,14 +300,14 @@ pub enum UpdateTaskAction {
     UpdateSubtaskInfo = 3,
 }
 #[doc = r" Generated client implementations."]
-pub mod task_manager_client {
+pub mod task_manager_services_client {
     #![allow(unused_variables, dead_code, missing_docs, clippy::let_unit_value)]
     use tonic::codegen::*;
     #[derive(Debug, Clone)]
-    pub struct TaskManagerClient<T> {
+    pub struct TaskManagerServicesClient<T> {
         inner: tonic::client::Grpc<T>,
     }
-    impl TaskManagerClient<tonic::transport::Channel> {
+    impl TaskManagerServicesClient<tonic::transport::Channel> {
         #[doc = r" Attempt to create a new client by connecting to a given endpoint."]
         pub async fn connect<D>(dst: D) -> Result<Self, tonic::transport::Error>
         where
@@ -342,7 +318,7 @@ pub mod task_manager_client {
             Ok(Self::new(conn))
         }
     }
-    impl<T> TaskManagerClient<T>
+    impl<T> TaskManagerServicesClient<T>
     where
         T: tonic::client::GrpcService<tonic::body::BoxBody>,
         T::ResponseBody: Body + Send + 'static,
@@ -356,7 +332,7 @@ pub mod task_manager_client {
         pub fn with_interceptor<F>(
             inner: T,
             interceptor: F,
-        ) -> TaskManagerClient<InterceptedService<T, F>>
+        ) -> TaskManagerServicesClient<InterceptedService<T, F>>
         where
             F: tonic::service::Interceptor,
             T: tonic::codegen::Service<
@@ -368,7 +344,7 @@ pub mod task_manager_client {
             <T as tonic::codegen::Service<http::Request<tonic::body::BoxBody>>>::Error:
                 Into<StdError> + Send + Sync,
         {
-            TaskManagerClient::new(InterceptedService::new(inner, interceptor))
+            TaskManagerServicesClient::new(InterceptedService::new(inner, interceptor))
         }
         #[doc = r" Compress requests with `gzip`."]
         #[doc = r""]
@@ -395,7 +371,7 @@ pub mod task_manager_client {
                 )
             })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static("/pb.TaskManager/CreateTask");
+            let path = http::uri::PathAndQuery::from_static("/pb.TaskManagerServices/CreateTask");
             self.inner.unary(request.into_request(), path, codec).await
         }
         #[doc = "修改任务"]
@@ -410,7 +386,7 @@ pub mod task_manager_client {
                 )
             })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static("/pb.TaskManager/UpdateTask");
+            let path = http::uri::PathAndQuery::from_static("/pb.TaskManagerServices/UpdateTask");
             self.inner.unary(request.into_request(), path, codec).await
         }
         #[doc = "查询任务"]
@@ -425,7 +401,7 @@ pub mod task_manager_client {
                 )
             })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static("/pb.TaskManager/SearchTask");
+            let path = http::uri::PathAndQuery::from_static("/pb.TaskManagerServices/SearchTask");
             self.inner.unary(request.into_request(), path, codec).await
         }
         #[doc = "查询子任务"]
@@ -440,18 +416,19 @@ pub mod task_manager_client {
                 )
             })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static("/pb.TaskManager/SearchSubTask");
+            let path =
+                http::uri::PathAndQuery::from_static("/pb.TaskManagerServices/SearchSubTask");
             self.inner.unary(request.into_request(), path, codec).await
         }
     }
 }
 #[doc = r" Generated server implementations."]
-pub mod task_manager_server {
+pub mod task_manager_services_server {
     #![allow(unused_variables, dead_code, missing_docs, clippy::let_unit_value)]
     use tonic::codegen::*;
-    #[doc = "Generated trait containing gRPC methods that should be implemented for use with TaskManagerServer."]
+    #[doc = "Generated trait containing gRPC methods that should be implemented for use with TaskManagerServicesServer."]
     #[async_trait]
-    pub trait TaskManager: Send + Sync + 'static {
+    pub trait TaskManagerServices: Send + Sync + 'static {
         #[doc = "创建任务"]
         async fn create_task(
             &self,
@@ -474,13 +451,13 @@ pub mod task_manager_server {
         ) -> Result<tonic::Response<super::SearchSubTaskResponse>, tonic::Status>;
     }
     #[derive(Debug)]
-    pub struct TaskManagerServer<T: TaskManager> {
+    pub struct TaskManagerServicesServer<T: TaskManagerServices> {
         inner: _Inner<T>,
         accept_compression_encodings: EnabledCompressionEncodings,
         send_compression_encodings: EnabledCompressionEncodings,
     }
     struct _Inner<T>(Arc<T>);
-    impl<T: TaskManager> TaskManagerServer<T> {
+    impl<T: TaskManagerServices> TaskManagerServicesServer<T> {
         pub fn new(inner: T) -> Self {
             let inner = Arc::new(inner);
             let inner = _Inner(inner);
@@ -507,9 +484,9 @@ pub mod task_manager_server {
             self
         }
     }
-    impl<T, B> tonic::codegen::Service<http::Request<B>> for TaskManagerServer<T>
+    impl<T, B> tonic::codegen::Service<http::Request<B>> for TaskManagerServicesServer<T>
     where
-        T: TaskManager,
+        T: TaskManagerServices,
         B: Body + Send + 'static,
         B::Error: Into<StdError> + Send + 'static,
     {
@@ -522,10 +499,12 @@ pub mod task_manager_server {
         fn call(&mut self, req: http::Request<B>) -> Self::Future {
             let inner = self.inner.clone();
             match req.uri().path() {
-                "/pb.TaskManager/CreateTask" => {
+                "/pb.TaskManagerServices/CreateTask" => {
                     #[allow(non_camel_case_types)]
-                    struct CreateTaskSvc<T: TaskManager>(pub Arc<T>);
-                    impl<T: TaskManager> tonic::server::UnaryService<super::CreateTaskRequest> for CreateTaskSvc<T> {
+                    struct CreateTaskSvc<T: TaskManagerServices>(pub Arc<T>);
+                    impl<T: TaskManagerServices>
+                        tonic::server::UnaryService<super::CreateTaskRequest> for CreateTaskSvc<T>
+                    {
                         type Response = super::CreateTaskResponse;
                         type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
                         fn call(
@@ -553,10 +532,12 @@ pub mod task_manager_server {
                     };
                     Box::pin(fut)
                 }
-                "/pb.TaskManager/UpdateTask" => {
+                "/pb.TaskManagerServices/UpdateTask" => {
                     #[allow(non_camel_case_types)]
-                    struct UpdateTaskSvc<T: TaskManager>(pub Arc<T>);
-                    impl<T: TaskManager> tonic::server::UnaryService<super::UpdateTaskRequest> for UpdateTaskSvc<T> {
+                    struct UpdateTaskSvc<T: TaskManagerServices>(pub Arc<T>);
+                    impl<T: TaskManagerServices>
+                        tonic::server::UnaryService<super::UpdateTaskRequest> for UpdateTaskSvc<T>
+                    {
                         type Response = super::UpdateTaskResponse;
                         type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
                         fn call(
@@ -584,10 +565,12 @@ pub mod task_manager_server {
                     };
                     Box::pin(fut)
                 }
-                "/pb.TaskManager/SearchTask" => {
+                "/pb.TaskManagerServices/SearchTask" => {
                     #[allow(non_camel_case_types)]
-                    struct SearchTaskSvc<T: TaskManager>(pub Arc<T>);
-                    impl<T: TaskManager> tonic::server::UnaryService<super::SearchTaskRequest> for SearchTaskSvc<T> {
+                    struct SearchTaskSvc<T: TaskManagerServices>(pub Arc<T>);
+                    impl<T: TaskManagerServices>
+                        tonic::server::UnaryService<super::SearchTaskRequest> for SearchTaskSvc<T>
+                    {
                         type Response = super::SearchTaskResponse;
                         type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
                         fn call(
@@ -615,10 +598,11 @@ pub mod task_manager_server {
                     };
                     Box::pin(fut)
                 }
-                "/pb.TaskManager/SearchSubTask" => {
+                "/pb.TaskManagerServices/SearchSubTask" => {
                     #[allow(non_camel_case_types)]
-                    struct SearchSubTaskSvc<T: TaskManager>(pub Arc<T>);
-                    impl<T: TaskManager> tonic::server::UnaryService<super::SearchSubTaskRequest>
+                    struct SearchSubTaskSvc<T: TaskManagerServices>(pub Arc<T>);
+                    impl<T: TaskManagerServices>
+                        tonic::server::UnaryService<super::SearchSubTaskRequest>
                         for SearchSubTaskSvc<T>
                     {
                         type Response = super::SearchSubTaskResponse;
@@ -659,7 +643,7 @@ pub mod task_manager_server {
             }
         }
     }
-    impl<T: TaskManager> Clone for TaskManagerServer<T> {
+    impl<T: TaskManagerServices> Clone for TaskManagerServicesServer<T> {
         fn clone(&self) -> Self {
             let inner = self.inner.clone();
             Self {
@@ -669,7 +653,7 @@ pub mod task_manager_server {
             }
         }
     }
-    impl<T: TaskManager> Clone for _Inner<T> {
+    impl<T: TaskManagerServices> Clone for _Inner<T> {
         fn clone(&self) -> Self {
             Self(self.0.clone())
         }
@@ -679,27 +663,18 @@ pub mod task_manager_server {
             write!(f, "{:?}", self.0)
         }
     }
-    impl<T: TaskManager> tonic::transport::NamedService for TaskManagerServer<T> {
-        const NAME: &'static str = "pb.TaskManager";
+    impl<T: TaskManagerServices> tonic::transport::NamedService for TaskManagerServicesServer<T> {
+        const NAME: &'static str = "pb.TaskManagerServices";
     }
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct FoundTaskRequest {
     #[prost(string, tag = "1")]
     pub tag: ::prost::alloc::string::String,
-    #[prost(int32, tag = "2")]
-    pub size: i32,
-    #[prost(int32, tag = "3")]
-    pub page: i32,
-    ///default:"create_time desc"
-    #[prost(string, tag = "4")]
-    pub sort: ::prost::alloc::string::String,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct FoundTaskResponse {
-    #[prost(int32, tag = "1")]
-    pub total: i32,
-    #[prost(message, repeated, tag = "2")]
+    #[prost(message, repeated, tag = "1")]
     pub tasks: ::prost::alloc::vec::Vec<Task>,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -717,7 +692,7 @@ pub struct PullTaskRequest {
     #[prost(message, optional, tag = "1")]
     pub worker: ::core::option::Option<Worker>,
     #[prost(string, tag = "2")]
-    pub task_id: ::prost::alloc::string::String,
+    pub task_code: ::prost::alloc::string::String,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct PullTaskResponse {
@@ -729,7 +704,7 @@ pub struct PullTaskResponse {
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct CompleteSubTaskRequest {
     #[prost(string, tag = "1")]
-    pub sub_task_id: ::prost::alloc::string::String,
+    pub sub_task_code: ::prost::alloc::string::String,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct CompleteSubTaskResponse {
@@ -737,14 +712,14 @@ pub struct CompleteSubTaskResponse {
     pub result: ::core::option::Option<CommonResult>,
 }
 #[doc = r" Generated client implementations."]
-pub mod workers_scheduling_client {
+pub mod workers_scheduling_services_client {
     #![allow(unused_variables, dead_code, missing_docs, clippy::let_unit_value)]
     use tonic::codegen::*;
     #[derive(Debug, Clone)]
-    pub struct WorkersSchedulingClient<T> {
+    pub struct WorkersSchedulingServicesClient<T> {
         inner: tonic::client::Grpc<T>,
     }
-    impl WorkersSchedulingClient<tonic::transport::Channel> {
+    impl WorkersSchedulingServicesClient<tonic::transport::Channel> {
         #[doc = r" Attempt to create a new client by connecting to a given endpoint."]
         pub async fn connect<D>(dst: D) -> Result<Self, tonic::transport::Error>
         where
@@ -755,7 +730,7 @@ pub mod workers_scheduling_client {
             Ok(Self::new(conn))
         }
     }
-    impl<T> WorkersSchedulingClient<T>
+    impl<T> WorkersSchedulingServicesClient<T>
     where
         T: tonic::client::GrpcService<tonic::body::BoxBody>,
         T::ResponseBody: Body + Send + 'static,
@@ -769,7 +744,7 @@ pub mod workers_scheduling_client {
         pub fn with_interceptor<F>(
             inner: T,
             interceptor: F,
-        ) -> WorkersSchedulingClient<InterceptedService<T, F>>
+        ) -> WorkersSchedulingServicesClient<InterceptedService<T, F>>
         where
             F: tonic::service::Interceptor,
             T: tonic::codegen::Service<
@@ -781,7 +756,7 @@ pub mod workers_scheduling_client {
             <T as tonic::codegen::Service<http::Request<tonic::body::BoxBody>>>::Error:
                 Into<StdError> + Send + Sync,
         {
-            WorkersSchedulingClient::new(InterceptedService::new(inner, interceptor))
+            WorkersSchedulingServicesClient::new(InterceptedService::new(inner, interceptor))
         }
         #[doc = r" Compress requests with `gzip`."]
         #[doc = r""]
@@ -808,7 +783,7 @@ pub mod workers_scheduling_client {
                 )
             })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static("/pb.WorkersScheduling/Ping");
+            let path = http::uri::PathAndQuery::from_static("/pb.WorkersSchedulingServices/Ping");
             self.inner.unary(request.into_request(), path, codec).await
         }
         #[doc = "发现任务"]
@@ -823,7 +798,8 @@ pub mod workers_scheduling_client {
                 )
             })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static("/pb.WorkersScheduling/FoundTask");
+            let path =
+                http::uri::PathAndQuery::from_static("/pb.WorkersSchedulingServices/FoundTask");
             self.inner.unary(request.into_request(), path, codec).await
         }
         #[doc = "拉取任务"]
@@ -838,7 +814,8 @@ pub mod workers_scheduling_client {
                 )
             })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static("/pb.WorkersScheduling/PullTask");
+            let path =
+                http::uri::PathAndQuery::from_static("/pb.WorkersSchedulingServices/PullTask");
             self.inner.unary(request.into_request(), path, codec).await
         }
         #[doc = "完成任务"]
@@ -853,19 +830,20 @@ pub mod workers_scheduling_client {
                 )
             })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path =
-                http::uri::PathAndQuery::from_static("/pb.WorkersScheduling/CompleteSubTask");
+            let path = http::uri::PathAndQuery::from_static(
+                "/pb.WorkersSchedulingServices/CompleteSubTask",
+            );
             self.inner.unary(request.into_request(), path, codec).await
         }
     }
 }
 #[doc = r" Generated server implementations."]
-pub mod workers_scheduling_server {
+pub mod workers_scheduling_services_server {
     #![allow(unused_variables, dead_code, missing_docs, clippy::let_unit_value)]
     use tonic::codegen::*;
-    #[doc = "Generated trait containing gRPC methods that should be implemented for use with WorkersSchedulingServer."]
+    #[doc = "Generated trait containing gRPC methods that should be implemented for use with WorkersSchedulingServicesServer."]
     #[async_trait]
-    pub trait WorkersScheduling: Send + Sync + 'static {
+    pub trait WorkersSchedulingServices: Send + Sync + 'static {
         #[doc = "心跳"]
         async fn ping(
             &self,
@@ -888,13 +866,13 @@ pub mod workers_scheduling_server {
         ) -> Result<tonic::Response<super::CompleteSubTaskResponse>, tonic::Status>;
     }
     #[derive(Debug)]
-    pub struct WorkersSchedulingServer<T: WorkersScheduling> {
+    pub struct WorkersSchedulingServicesServer<T: WorkersSchedulingServices> {
         inner: _Inner<T>,
         accept_compression_encodings: EnabledCompressionEncodings,
         send_compression_encodings: EnabledCompressionEncodings,
     }
     struct _Inner<T>(Arc<T>);
-    impl<T: WorkersScheduling> WorkersSchedulingServer<T> {
+    impl<T: WorkersSchedulingServices> WorkersSchedulingServicesServer<T> {
         pub fn new(inner: T) -> Self {
             let inner = Arc::new(inner);
             let inner = _Inner(inner);
@@ -921,9 +899,9 @@ pub mod workers_scheduling_server {
             self
         }
     }
-    impl<T, B> tonic::codegen::Service<http::Request<B>> for WorkersSchedulingServer<T>
+    impl<T, B> tonic::codegen::Service<http::Request<B>> for WorkersSchedulingServicesServer<T>
     where
-        T: WorkersScheduling,
+        T: WorkersSchedulingServices,
         B: Body + Send + 'static,
         B::Error: Into<StdError> + Send + 'static,
     {
@@ -936,10 +914,12 @@ pub mod workers_scheduling_server {
         fn call(&mut self, req: http::Request<B>) -> Self::Future {
             let inner = self.inner.clone();
             match req.uri().path() {
-                "/pb.WorkersScheduling/Ping" => {
+                "/pb.WorkersSchedulingServices/Ping" => {
                     #[allow(non_camel_case_types)]
-                    struct PingSvc<T: WorkersScheduling>(pub Arc<T>);
-                    impl<T: WorkersScheduling> tonic::server::UnaryService<super::PingRequest> for PingSvc<T> {
+                    struct PingSvc<T: WorkersSchedulingServices>(pub Arc<T>);
+                    impl<T: WorkersSchedulingServices>
+                        tonic::server::UnaryService<super::PingRequest> for PingSvc<T>
+                    {
                         type Response = super::PingResponse;
                         type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
                         fn call(
@@ -967,11 +947,11 @@ pub mod workers_scheduling_server {
                     };
                     Box::pin(fut)
                 }
-                "/pb.WorkersScheduling/FoundTask" => {
+                "/pb.WorkersSchedulingServices/FoundTask" => {
                     #[allow(non_camel_case_types)]
-                    struct FoundTaskSvc<T: WorkersScheduling>(pub Arc<T>);
-                    impl<T: WorkersScheduling> tonic::server::UnaryService<super::FoundTaskRequest>
-                        for FoundTaskSvc<T>
+                    struct FoundTaskSvc<T: WorkersSchedulingServices>(pub Arc<T>);
+                    impl<T: WorkersSchedulingServices>
+                        tonic::server::UnaryService<super::FoundTaskRequest> for FoundTaskSvc<T>
                     {
                         type Response = super::FoundTaskResponse;
                         type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
@@ -1000,10 +980,12 @@ pub mod workers_scheduling_server {
                     };
                     Box::pin(fut)
                 }
-                "/pb.WorkersScheduling/PullTask" => {
+                "/pb.WorkersSchedulingServices/PullTask" => {
                     #[allow(non_camel_case_types)]
-                    struct PullTaskSvc<T: WorkersScheduling>(pub Arc<T>);
-                    impl<T: WorkersScheduling> tonic::server::UnaryService<super::PullTaskRequest> for PullTaskSvc<T> {
+                    struct PullTaskSvc<T: WorkersSchedulingServices>(pub Arc<T>);
+                    impl<T: WorkersSchedulingServices>
+                        tonic::server::UnaryService<super::PullTaskRequest> for PullTaskSvc<T>
+                    {
                         type Response = super::PullTaskResponse;
                         type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
                         fn call(
@@ -1031,10 +1013,10 @@ pub mod workers_scheduling_server {
                     };
                     Box::pin(fut)
                 }
-                "/pb.WorkersScheduling/CompleteSubTask" => {
+                "/pb.WorkersSchedulingServices/CompleteSubTask" => {
                     #[allow(non_camel_case_types)]
-                    struct CompleteSubTaskSvc<T: WorkersScheduling>(pub Arc<T>);
-                    impl<T: WorkersScheduling>
+                    struct CompleteSubTaskSvc<T: WorkersSchedulingServices>(pub Arc<T>);
+                    impl<T: WorkersSchedulingServices>
                         tonic::server::UnaryService<super::CompleteSubTaskRequest>
                         for CompleteSubTaskSvc<T>
                     {
@@ -1076,7 +1058,7 @@ pub mod workers_scheduling_server {
             }
         }
     }
-    impl<T: WorkersScheduling> Clone for WorkersSchedulingServer<T> {
+    impl<T: WorkersSchedulingServices> Clone for WorkersSchedulingServicesServer<T> {
         fn clone(&self) -> Self {
             let inner = self.inner.clone();
             Self {
@@ -1086,7 +1068,7 @@ pub mod workers_scheduling_server {
             }
         }
     }
-    impl<T: WorkersScheduling> Clone for _Inner<T> {
+    impl<T: WorkersSchedulingServices> Clone for _Inner<T> {
         fn clone(&self) -> Self {
             Self(self.0.clone())
         }
@@ -1096,7 +1078,9 @@ pub mod workers_scheduling_server {
             write!(f, "{:?}", self.0)
         }
     }
-    impl<T: WorkersScheduling> tonic::transport::NamedService for WorkersSchedulingServer<T> {
-        const NAME: &'static str = "pb.WorkersScheduling";
+    impl<T: WorkersSchedulingServices> tonic::transport::NamedService
+        for WorkersSchedulingServicesServer<T>
+    {
+        const NAME: &'static str = "pb.WorkersSchedulingServices";
     }
 }

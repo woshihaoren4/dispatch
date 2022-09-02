@@ -1,22 +1,13 @@
-
-use wd_run::{Context, CmdInfo};
-use std::pin::Pin;
 use std::future::Future;
-
-
-use tonic::{Status, Response, Request, transport::Server, Code};
-use crate::pb::*;
-use tonic::service::Interceptor;
-use std::sync::atomic::AtomicI32;
-use std::sync::Arc;
-use tower::{Layer, Service};
-use hyper::Body;
-use tonic::body::BoxBody;
-use std::task::Poll;
+use std::pin::Pin;
 use std::time::Duration;
-// use crate::app::middle::{GrpcMiddleInterface, GrpcMiddleLayer};
-use crate::pb::task_manager_server::{TaskManagerServer, TaskManager};
-
+use hyper::Body;
+use tonic::{Code, Request, Response, Status, transport::Server};
+use tonic::body::BoxBody;
+use wd_run::{CmdInfo, Context};
+use crate::app::middle::{LayerHyperInterceptor, MyMiddlewareLayer};
+use crate::pb::*;
+use crate::pb::task_manager_services_server::{TaskManagerServices, TaskManagerServicesServer};
 
 pub struct AppRun {}
 
@@ -39,12 +30,13 @@ impl wd_run::EventHandle for AppRun{
                 // .layer(GrpcMiddleLayer::new(Middle))
                 // .layer(tower::layer::layer_fn(|service|HelloWorld{inner:service,index:10}))
                 // .layer(tonic::service::interceptor(intercept))
+                .layer(MyMiddlewareLayer::new(TestMiddle))
                 .into_inner();
-            let server =TaskManagerServer::new(TaskServerImpl {});
+            let server =TaskManagerServicesServer::new(TaskServerImpl {});
             Server::builder()
                 .layer(layer)
                 .add_service(server)
-                .serve("127.0.0.1:666".parse().unwrap())
+                .serve("127.0.0.1:6666".parse().unwrap())
                 .await.unwrap();
             return ctx
         })
@@ -54,24 +46,37 @@ impl wd_run::EventHandle for AppRun{
 pub struct TaskServerImpl{}
 
 #[async_trait::async_trait]
-impl TaskManager for TaskServerImpl{
-    async fn create_task(&self, request: Request<CreateTaskRequest>) -> Result<Response<CreateTaskResponse>, Status> {
+impl TaskManagerServices for TaskServerImpl{
+    async fn create_task(&self, _request: Request<CreateTaskRequest>) -> Result<Response<CreateTaskResponse>, Status> {
         return Err(Status::new(Code::Unknown,"not found"))
     }
 
-    async fn update_task(&self, request: Request<UpdateTaskRequest>) -> Result<Response<UpdateTaskResponse>, Status> {
+    async fn update_task(&self, _request: Request<UpdateTaskRequest>) -> Result<Response<UpdateTaskResponse>, Status> {
         return Err(Status::new(Code::Unknown,"not found"))
     }
 
-    async fn search_task(&self, request: Request<SearchTaskRequest>) -> Result<Response<SearchTaskResponse>, Status> {
+    async fn search_task(&self, _request: Request<SearchTaskRequest>) -> Result<Response<SearchTaskResponse>, Status> {
         return Err(Status::new(Code::Unknown,"not found"))
     }
 
-    async fn search_sub_task(&self, request: Request<SearchSubTaskRequest>) -> Result<Response<SearchSubTaskResponse>, Status> {
+    async fn search_sub_task(&self, _request: Request<SearchSubTaskRequest>) -> Result<Response<SearchSubTaskResponse>, Status> {
         return Err(Status::new(Code::Unknown,"not found"))
     }
+
 }
 
-fn intercept(req: Request<()>) -> Result<Request<()>, Status> {
-    Ok(req)
+pub struct TestMiddle;
+
+#[async_trait::async_trait]
+impl LayerHyperInterceptor for TestMiddle{
+    async fn request(&self, ctx: Context, request: hyper::Request<Body>) -> Result<hyper::Request<Body>, hyper::Response<BoxBody>> {
+        ctx.set("hello","world").await;
+        return Ok(request)
+    }
+
+    async fn response(&self, ctx: Context, response: hyper::Response<BoxBody>) -> hyper::Response<BoxBody> {
+        let world = ctx.copy::<_,&str>("hello").await.unwrap_or("default_world");
+        wd_log::log_info_ln!("TestMiddle ---> {}",world);
+        return response;
+    }
 }

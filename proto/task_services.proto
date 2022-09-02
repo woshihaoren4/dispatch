@@ -1,10 +1,16 @@
 syntax = "proto3";
+
 package pb;
+
+option java_multiple_files = true;
+option java_package = "com.yutiandou.common.proto";
+option java_outer_classname = "TaskServices";
+
 import "message.proto";
 import "google/api/annotations.proto";
-import "google/protobuf/struct.proto";
+//import "google/protobuf/struct.proto";
 
-service TaskManager {
+service TaskManagerServices {
   //创建任务
   rpc CreateTask(CreateTaskRequest) returns (CreateTaskResponse){
     option (google.api.http) = {
@@ -15,7 +21,7 @@ service TaskManager {
   //修改任务
   rpc UpdateTask(UpdateTaskRequest) returns(UpdateTaskResponse){
     option (google.api.http) = {
-      post: "/api/v1/task/{task_id}/update/{action}"
+      post: "/api/v1/task/{task__code}/update/{action}"
       body: "*"
     };
   }
@@ -29,7 +35,7 @@ service TaskManager {
   //查询子任务
   rpc SearchSubTask(SearchSubTaskRequest)returns(SearchSubTaskResponse){
     option (google.api.http) = {
-      post: "/api/v1/task/search"
+      post: "/api/v1/sub_task/search"
       body: "*"
     };
   }
@@ -40,20 +46,18 @@ message CreateTaskSubTask{
   string extern = 9; //扩展信息
 }
 message CreateTaskRequest {
-  string task_name = 2;
-  string description = 3; //描述
-  TaskType type = 5;
-  bytes config = 7; //任务触发的时候会传递给执行者
-  repeated string tags = 8;
-  repeated CreateTaskSubTask sub_tasks = 9;
-  oneof Content{
-    BatchContent batch_ctx = 100;
-    TimingContent timing_ctx = 101;
-    ElectionContent election_ctx = 102;
-  }
+  string task_name = 1;
+  string description = 2; //描述
+  TaskType type = 3;
+  string config = 4; //任务触发的时候会传递给执行者
+  int64 start_time = 5;
+  int64 end_time = 6;
+  repeated string tags = 7;
+  repeated CreateTaskSubTask sub_tasks = 8;
+  //todo  DispatchPolicy policy = 10; //超时策略
 }
 message CreateTaskResponse{
-  string task_id = 1;
+  string task__code = 1;
   string create_time = 2;
   CommonResult result = 100;
 }
@@ -64,39 +68,41 @@ enum UpdateTaskAction {
   UPDATE_SUBTASK_INFO = 3;
 }
 
-message UpdateTaskInfoValue{
-  //name
-  //description
-  //config
-  map<string, google.protobuf.Value> values = 1;
+message UpdateTaskInfo{
+  string task_name = 2;
+  string description = 3; //描述
+  string config = 7; //任务触发的时候会传递给执行者
+  repeated string tags = 8;
 }
 message AppendSubTask{
   repeated CreateTaskSubTask sub_tasks = 1;
 }
-message UpdateSubTaskInfoValue{
-  string sub_task_id = 1;
-  map<string, google.protobuf.Value> values = 2;
+message UpdateSubTaskInfo{
+  string sub_task__code = 1;
+  string sub_task_name = 2;
+  string description = 3;
+  string extern = 4; //扩展信息
 }
 message UpdateTaskRequest{
-  string task_id = 1;
+  string task__code = 1;
   UpdateTaskAction action = 2;
   oneof update_content{
     TaskStatus status = 100;
-    UpdateTaskInfoValue task_values = 101;
+    UpdateTaskInfo task_values = 101;
     AppendSubTask sub_tasks = 102;
-    UpdateSubTaskInfoValue sub_task_values = 103;
+    UpdateSubTaskInfo sub_task_values = 103;
   }
 }
 message UpdateTaskResponse{
   CommonResult result = 100;
 }
 message SearchTaskRequest{
-  string task_id = 1;
+  string task__code = 1;
   string name = 2;
   TaskType type = 3;
   TaskStatus status = 4;
-  string start_time = 5;
-  string end_time = 6;
+  int64 start_time = 5;  //相对创建时间的时间范围
+  int64 end_time = 6;
   int32 size = 7;
   int32 page = 8;
   string sort = 9; //default:"create_time desc"
@@ -107,12 +113,12 @@ message SearchTaskResponse{
   CommonResult result = 100;
 }
 message SearchSubTaskRequest{
-  string sub_task_id = 1;
+  string sub_task__code = 1;
   string sub_name = 2;
-  string task_id = 3; //父任务的id
+  string task__code = 3; //父任务的_code
   SubTaskStatus status = 4;
-//  string start_time = 5;
-//  string end_time = 6;
+  int64 start_time = 5;
+  int64 end_time = 6;
   int32 size = 7;
   int32 page = 8;
   string sort = 9; //default:"create_time desc"

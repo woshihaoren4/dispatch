@@ -1,10 +1,16 @@
- syntax = "proto3";
+syntax = "proto3";
+
 package pb;
+
+option java_multiple_files = true;
+option java_package = "com.yutiandou.common.proto";
+option java_outer_classname = "WorkerServices";
+
 import "message.proto";
 import "google/api/annotations.proto";
-import "google/protobuf/struct.proto";
+//import "google/protobuf/struct.proto";
 
-service WorkersScheduling{
+service WorkersSchedulingServices{
   //心跳
   rpc Ping(PingRequest)returns(PingResponse){
     option (google.api.http) = {
@@ -36,13 +42,9 @@ service WorkersScheduling{
 }
 message FoundTaskRequest{
   string tag = 1;
-  int32 size = 2;
-  int32 page = 3;
-  string sort = 4; //default:"create_time desc"
 }
 message FoundTaskResponse{
-  int32 total = 1;
-  repeated Task tasks = 2;
+  repeated Task tasks = 1;
 }
 message PingRequest{
   Worker worker = 1;
@@ -52,14 +54,14 @@ message PingResponse{
 }
 message PullTaskRequest{
   Worker worker = 1;
-  string task_id = 2;
+  string task_code = 2;
 }
 message PullTaskResponse{
   SubTask sub_task = 1;
   CommonResult result = 255;
 }
 message CompleteSubTaskRequest{
-  string sub_task_id = 1;
+  string sub_task_code = 1;
 }
 message CompleteSubTaskResponse{
   CommonResult result = 255;
