@@ -1,7 +1,5 @@
-use std::sync::Arc;
 use mongodb::Collection;
 use mongodb::options::ClientOptions;
-use serde_json::Value;
 use crate::conf::MongoDb;
 use crate::infra::client::manager::{ Dao, Entity};
 

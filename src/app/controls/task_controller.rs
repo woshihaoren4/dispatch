@@ -3,7 +3,6 @@ use crate::pb::{
     CreateTaskRequest, CreateTaskResponse, SearchSubTaskRequest, SearchSubTaskResponse,
     SearchTaskRequest, SearchTaskResponse, UpdateTaskRequest, UpdateTaskResponse,
 };
-use tonic::metadata::errors::ToStrError;
 use tonic::{Code, Request, Response, Status};
 
 pub struct TaskController {}

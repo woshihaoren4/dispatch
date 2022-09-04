@@ -1,5 +1,4 @@
 use crate::conf::{Config, DataSourceDriver};
-use std::borrow::Borrow;
 use std::future::Future;
 use std::pin::Pin;
 use std::sync::Arc;
@@ -31,7 +30,9 @@ impl AppRun {
             DataSourceDriver::Mysql => {}
             DataSourceDriver::Postgresql => {}
             DataSourceDriver::Mongo(m) => {
-                dsc = dsc.register_mongo(MongoClient::new(cfg.server.name,m).await?)
+                let url = m.url.clone();
+                dsc = dsc.register_mongo(MongoClient::new(cfg.server.name,m).await?);
+                wd_log::log_info_ln!("init mongodb success url:{}",url);
             }
         }
 
@@ -45,7 +46,7 @@ impl wd_run::EventHandle for AppRun {
         return Box::pin(async move {
             //加载配置文件
             let cfg = AppRun::load_config_ctx(&ctx).await;
-            wd_log::log_info_ln!("config -> {}", cfg.to_string());
+            wd_log::log_info_ln!("config load success: {}", cfg.to_string());
 
             //初始化数据源
             AppRun::init_database_source(cfg.clone()).await.unwrap();

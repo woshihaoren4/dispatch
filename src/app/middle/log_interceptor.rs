@@ -1,12 +1,9 @@
 use crate::infra::LayerHyperInterceptor;
-use hyper::body::HttpBody;
 use hyper::http::HeaderValue;
 use hyper::{Body, HeaderMap, Request, Response};
 use std::collections::HashMap;
-use std::future::Future;
 use std::str::FromStr;
 use tonic::body::BoxBody;
-use tonic::{Code, Status};
 use wd_run::Context;
 
 const REQUEST_ID: &'static str = "dispatch_grpc_request_id";

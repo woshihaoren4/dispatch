@@ -1,6 +1,3 @@
-use std::collections::HashMap;
-use std::sync::Arc;
-use tokio::count;
 use crate::infra::client::manager::Entity;
 use crate::infra::client::manager::interface:: Dao;
 use crate::infra::client::mongo::{MongoClient, MongoDao};
@@ -42,7 +39,7 @@ pub struct DefaultDao;
 impl<'a, V> Dao<'a,V> for DefaultDao
     where for<'async_trait> V: Entity<'a>+ 'async_trait
 {
-    async fn insert(&self, mut entity:V) -> anyhow::Result<V> {
+    async fn insert(&self, _:V) -> anyhow::Result<V> {
         return Err(anyhow::anyhow!("DefaultDao"))
     }
 }

@@ -1,4 +1,3 @@
-use std::sync::Arc;
 use serde::{Deserialize, Serialize};
 
 pub trait Entity<'a> : Send + Sync + Serialize + Deserialize<'a> {
