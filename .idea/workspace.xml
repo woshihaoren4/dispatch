@@ -7,40 +7,92 @@
     <cargoProject FILE="$PROJECT_DIR$/Cargo.toml" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="603ca18f-9ba9-4a5a-a98d-4535cd07062f" name="Changes" comment="精简一下">
-      <change afterPath="$PROJECT_DIR$/server.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+    <list default="true" id="603ca18f-9ba9-4a5a-a98d-4535cd07062f" name="Changes" comment="改变一下结构">
+      <change afterPath="$PROJECT_DIR$/src/app/dao/mod.rs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/dao/task_dao.rs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/entity/mod.rs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/entity/task.rs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/middle/concurrent_interceptor.rs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/middle/log_interceptor.rs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/middle/mod.rs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/conf/config.rs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/conf/config.toml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/conf/mod.rs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/infra/client/manager/interface.rs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/infra/client/manager/manager_entity.rs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/infra/client/manager/mod.rs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/infra/client/mod.rs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/infra/client/mongo/client.rs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/infra/client/mongo/mod.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Cargo.lock" beforeDir="false" afterPath="$PROJECT_DIR$/Cargo.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Cargo.toml" beforeDir="false" afterPath="$PROJECT_DIR$/Cargo.toml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build.rs" beforeDir="false" afterPath="$PROJECT_DIR$/build.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/proto/message.proto" beforeDir="false" afterPath="$PROJECT_DIR$/proto/message.proto" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/proto/task_services.proto" beforeDir="false" afterPath="$PROJECT_DIR$/proto/task_services.proto" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/proto/worker_services.proto" beforeDir="false" afterPath="$PROJECT_DIR$/proto/worker_services.proto" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/middle/common.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/middle/common.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/controls/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/controls/mod.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/controls/task_controller.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/controls/task_controller.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/mod.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/build_grpc.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/build_grpc.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/cmd/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/cmd/mod.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/cmd/run.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/cmd/run.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pb/google.api.rs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pb/google.protobuf.rs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pb/pb.rs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/infra/middle/common.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/infra/middle/common.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/infra/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/infra/mod.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/pb/services_descriptor.bin" beforeDir="false" afterPath="$PROJECT_DIR$/src/pb/services_descriptor.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/server.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/server.rs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Rust File" />
+      </list>
+    </option>
+  </component>
   <component name="GOROOT" url="file:///usr/local/go" />
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="HighlightingSettingsPerFile">
-    <setting file="file://$USER_HOME$/.cargo/registry/src/github.com-1ecc6299db9ec823/tonic-0.6.2/src/body.rs" root0="SKIP_INSPECTION" />
+    <setting file="file://$USER_HOME$/.cargo/registry/src/github.com-1ecc6299db9ec823/anyhow-1.0.63/src/macros.rs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$USER_HOME$/.cargo/registry/src/github.com-1ecc6299db9ec823/async-trait-0.1.56/src/lib.rs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$USER_HOME$/.cargo/registry/src/github.com-1ecc6299db9ec823/bytes-1.1.0/src/bytes.rs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$USER_HOME$/.cargo/registry/src/github.com-1ecc6299db9ec823/http-0.2.8/src/header/value.rs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$USER_HOME$/.cargo/registry/src/github.com-1ecc6299db9ec823/http-body-0.4.5/src/combinators/box_body.rs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$USER_HOME$/.cargo/registry/src/github.com-1ecc6299db9ec823/mongodb-2.3.0/src/db/mod.rs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$USER_HOME$/.cargo/registry/src/github.com-1ecc6299db9ec823/serde_json-1.0.85/src/value/mod.rs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$USER_HOME$/.cargo/registry/src/github.com-1ecc6299db9ec823/tonic-0.6.2/src/body.rs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$USER_HOME$/.cargo/registry/src/github.com-1ecc6299db9ec823/tonic-0.6.2/src/service/interceptor.rs" root0="SKIP_INSPECTION" />
     <setting file="file://$USER_HOME$/.cargo/registry/src/github.com-1ecc6299db9ec823/tower-service-0.3.2/src/lib.rs" root0="SKIP_INSPECTION" />
-    <setting file="file://$USER_HOME$/.cargo/registry/src/github.com-1ecc6299db9ec823/wd_run-0.2.2/src/util/cmd/run.rs" root0="SKIP_INSPECTION" />
+    <setting file="file://$USER_HOME$/.cargo/registry/src/github.com-1ecc6299db9ec823/wd_event-0.3.3/src/context.rs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$USER_HOME$/.cargo/registry/src/github.com-1ecc6299db9ec823/wd_log-0.1.5/src/log_macro.rs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$USER_HOME$/.cargo/registry/src/github.com-1ecc6299db9ec823/wd_run-0.2.2/src/util/cmd/run.rs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$USER_HOME$/.cargo/registry/src/github.com-1ecc6299db9ec823/wd_run-0.2.2/src/util/conf/locad_conf.rs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$USER_HOME$/.rustup/toolchains/stable-x86_64-apple-darwin/lib/rustlib/src/rust/library/core/src/macros/mod.rs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/.gitignore" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Cargo.toml" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/server.sh" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/src/app/middle/common.rs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/src/app/middle/mod.rs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/src/app/util/grpc_middle.rs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/src/app/dao/task_dao.rs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/src/app/mod.rs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/src/cmd/mod.rs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/src/cmd/run.rs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/src/conf/config.rs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/src/conf/config.toml" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/src/conf/mod.rs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/src/infra/client/manager/interface.rs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/src/infra/client/manager/manager_entity.rs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/src/infra/client/manager/mod.rs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/src/infra/client/mod.rs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/src/infra/client/mongo/client.rs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/src/infra/client/mongo/mod.rs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/src/infra/middle/common.rs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/src/infra/middle/mod.rs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/src/infra/mod.rs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/src/server.rs" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="MacroExpansionManager">
@@ -77,12 +129,54 @@
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
     "org.rust.cargo.project.model.PROJECT_DISCOVERY": "true",
+    "org.rust.disableDetachedFileInspection/Users/bytedance/project/work/github/dispatch/src/app/entity/task.rs": "true",
     "settings.editor.selected.configurable": "MTConfigurable"
   }
 }]]></component>
-  <component name="RunManager">
-    <configuration default="true" type="CargoCommandRunConfiguration" factoryName="Cargo Command">
-      <option name="command" value="run" />
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src" />
+      <recent name="$PROJECT_DIR$/src/infra" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Cargo.Test conf::test::test_load_config">
+    <configuration name="Run server" type="CargoCommandRunConfiguration" factoryName="Cargo Command">
+      <option name="command" value="run --package dispatch --bin server run" />
+      <option name="workingDirectory" value="file://$PROJECT_DIR$" />
+      <option name="channel" value="DEFAULT" />
+      <option name="requiredFeatures" value="true" />
+      <option name="allFeatures" value="false" />
+      <option name="emulateTerminal" value="false" />
+      <option name="withSudo" value="false" />
+      <option name="buildTarget" value="REMOTE" />
+      <option name="backtrace" value="SHORT" />
+      <envs />
+      <option name="isRedirectInput" value="false" />
+      <option name="redirectInputPath" value="" />
+      <method v="2">
+        <option name="CARGO.BUILD_TASK_PROVIDER" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Test conf::test::test_format" type="CargoCommandRunConfiguration" factoryName="Cargo Command" temporary="true">
+      <option name="command" value="test --package dispatch --bin server conf::test::test_format -- --exact" />
+      <option name="workingDirectory" value="file://$PROJECT_DIR$" />
+      <option name="channel" value="DEFAULT" />
+      <option name="requiredFeatures" value="true" />
+      <option name="allFeatures" value="false" />
+      <option name="emulateTerminal" value="false" />
+      <option name="withSudo" value="false" />
+      <option name="buildTarget" value="REMOTE" />
+      <option name="backtrace" value="SHORT" />
+      <envs />
+      <option name="isRedirectInput" value="false" />
+      <option name="redirectInputPath" value="" />
+      <method v="2">
+        <option name="CARGO.BUILD_TASK_PROVIDER" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Test conf::test::test_load_config" type="CargoCommandRunConfiguration" factoryName="Cargo Command" temporary="true">
+      <option name="command" value="test --package dispatch --bin server conf::test::test_load_config -- --exact" />
+      <option name="workingDirectory" value="file://$PROJECT_DIR$" />
       <option name="channel" value="DEFAULT" />
       <option name="requiredFeatures" value="true" />
       <option name="allFeatures" value="false" />
@@ -116,9 +210,16 @@
       <framework value="gotest" />
       <method v="2" />
     </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Cargo.Test conf::test::test_load_config" />
+        <item itemvalue="Cargo.Test conf::test::test_format" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="RustProjectSettings">
     <option name="toolchainHomeDirectory" value="$USER_HOME$/.cargo/bin" />
+    <option name="version" value="2" />
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TypeScriptGeneratedFilesManager">
@@ -137,7 +238,9 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="精简一下" />
-    <option name="LAST_COMMIT_MESSAGE" value="精简一下" />
+    <MESSAGE value="初始化完成" />
+    <MESSAGE value="改变一下结构" />
+    <option name="LAST_COMMIT_MESSAGE" value="改变一下结构" />
   </component>
   <component name="VgoProject">
     <settings-migrated>true</settings-migrated>

@@ -1,0 +1,7 @@
+#[server]
+#name = "dispatch"
+#host_port = "0.0.0.0:666"
+
+#[data_source.driver]
+#type = "Mongo"
+#url = "mongo://localhost:21017/dispatch"
