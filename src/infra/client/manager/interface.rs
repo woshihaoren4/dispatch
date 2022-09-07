@@ -7,6 +7,6 @@ pub trait Entity<'a> : Send + Sync + Serialize + Deserialize<'a> {
 }
 
 #[async_trait::async_trait]
-pub trait Dao <'a, E:Entity<'a>> : Send {
+pub trait Dao <'a, E:Entity<'a>> : Send + Sync {
     async fn insert(&self, _: E)->anyhow::Result<E>;
 }

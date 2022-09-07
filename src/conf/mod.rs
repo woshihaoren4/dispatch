@@ -4,6 +4,7 @@ use anyhow::anyhow;
 pub use config::*;
 use std::path::Path;
 
+#[allow(dead_code)]
 pub fn load_config(path: impl AsRef<Path>) -> anyhow::Result<Config> {
     match wd_run::load_config(path) {
         Err(e) => return Err(anyhow!(e)),

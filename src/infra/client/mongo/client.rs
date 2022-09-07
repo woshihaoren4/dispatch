@@ -5,7 +5,7 @@ use crate::infra::client::manager::{ Dao, Entity};
 
 
 pub struct MongoClient{
-    cfg:MongoDb,
+    // cfg:MongoDb,
     client: mongodb::Client,
 }
 
@@ -16,7 +16,8 @@ impl MongoClient {
         opts.max_pool_size =opts.max_pool_size;
         let client = mongodb::Client::with_options(opts)?;
         let mc = MongoClient{
-            cfg,client,
+            client,
+            // cfg,client,
         };
         return Ok(mc)
     }

@@ -1,7 +1,9 @@
-use crate::app::controls::TaskController;
+use std::sync::Arc;
+use crate::app::controls::Server;
 use crate::app::middle::{ConcurrentInterceptor, LogInterceptor};
 use crate::conf::Config;
-use crate::infra::CustomInterceptor;
+use crate::infra::*;
+use crate::infra::middle::CustomInterceptor;
 use crate::pb;
 
 mod controls;
@@ -9,7 +11,7 @@ mod middle;
 mod entity;
 mod dao;
 
-pub async fn application_run(_ctx: wd_run::Context, cfg: Config) {
+pub async fn application_run(_ctx: wd_run::Context, cfg: Config,dsc:Arc<client::DataSourceCenter>) {
     let layer = tower::ServiceBuilder::new()
         .timeout(std::time::Duration::from_secs(60))
         // .concurrency_limit(100)
@@ -18,7 +20,7 @@ pub async fn application_run(_ctx: wd_run::Context, cfg: Config) {
         .into_inner();
 
     let task_service =
-        pb::task_manager_services_server::TaskManagerServicesServer::new(TaskController::new());
+        pb::task_manager_services_server::TaskManagerServicesServer::new(Server::new(dsc));
 
     wd_log::log_info_ln!(
         "server[{}] start lister:({})",

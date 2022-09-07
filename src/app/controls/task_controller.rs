@@ -1,58 +1,51 @@
 use crate::pb::task_manager_services_server::TaskManagerServices;
-use crate::pb::{
-    CreateTaskRequest, CreateTaskResponse, SearchSubTaskRequest, SearchSubTaskResponse,
-    SearchTaskRequest, SearchTaskResponse, UpdateTaskRequest, UpdateTaskResponse,
-};
+use crate::pb::{ CreateTaskRequest, CreateTaskResponse, SearchSubTaskRequest, SearchSubTaskResponse, SearchTaskRequest, SearchTaskResponse, UpdateTaskRequest, UpdateTaskResponse};
 use tonic::{Code, Request, Response, Status};
+use crate::app::entity;
 
-pub struct TaskController {}
-
-impl TaskController {
-    pub fn new() -> TaskController {
-        return TaskController {};
-    }
-}
 
 #[async_trait::async_trait]
-impl TaskManagerServices for TaskController {
+impl TaskManagerServices for super::Server{
     async fn create_task(
         &self,
         request: Request<CreateTaskRequest>,
     ) -> Result<Response<CreateTaskResponse>, Status> {
-        let option = request.metadata().get("dispatch_grpc_current_count");
-        if let Some(s) = option {
-            match s.to_str() {
-                Ok(o) => {
-                    wd_log::log_info_ln!("---------> dispatch_grpc_current_count {}", o);
-                }
-                Err(e) => {
-                    println!("{}", e.to_string())
-                }
+        //todo 参数校验
+        //创建task
+        let t = entity::Task::from(request.into_inner());
+        let dao = self.dsc.get_dao::<entity::Task>().await;
+        let result = dao.insert(t).await;
+        match result {
+            Ok(o) => {
+                Ok(Response::new(CreateTaskResponse {
+                    task_code: o.task_code,
+                    create_time: o.create_time,
+                    result: Self::response_success()
+                }))
             }
-        } else {
-            println!("{:?}", request.metadata())
+            Err(e) => {
+                Err(Status::new(Code::Unknown, e.to_string()))
+            }
         }
-
-        return Err(Status::new(Code::Unknown, "not found"));
     }
 
     async fn update_task(
         &self,
-        request: Request<UpdateTaskRequest>,
+        _request: Request<UpdateTaskRequest>,
     ) -> Result<Response<UpdateTaskResponse>, Status> {
         return Err(Status::new(Code::Unknown, "not found"));
     }
 
     async fn search_task(
         &self,
-        request: Request<SearchTaskRequest>,
+        _request: Request<SearchTaskRequest>,
     ) -> Result<Response<SearchTaskResponse>, Status> {
         return Err(Status::new(Code::Unknown, "not found"));
     }
 
     async fn search_sub_task(
         &self,
-        request: Request<SearchSubTaskRequest>,
+        _request: Request<SearchSubTaskRequest>,
     ) -> Result<Response<SearchSubTaskResponse>, Status> {
         return Err(Status::new(Code::Unknown, "not found"));
     }

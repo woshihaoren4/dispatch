@@ -3,7 +3,7 @@ use std::future::Future;
 use std::pin::Pin;
 use std::sync::Arc;
 use wd_run::{CmdInfo, Context};
-use crate::infra::{DataSourceCenter, MongoClient};
+use crate::infra::client::{DataSourceCenter, MongoClient};
 
 pub struct AppRun {}
 
@@ -49,9 +49,9 @@ impl wd_run::EventHandle for AppRun {
             wd_log::log_info_ln!("config load success: {}", cfg.to_string());
 
             //初始化数据源
-            AppRun::init_database_source(cfg.clone()).await.unwrap();
+            let dsc = AppRun::init_database_source(cfg.clone()).await.unwrap();
             //启动服务
-            crate::app::application_run(ctx.clone(), cfg).await;
+            crate::app::application_run(ctx.clone(), cfg,dsc).await;
 
             return ctx;
         });

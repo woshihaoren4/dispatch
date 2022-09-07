@@ -281,6 +281,7 @@ dependencies = [
  "chrono",
  "futures",
  "hyper",
+ "lazy_static",
  "mongodb",
  "prost",
  "prost-types",

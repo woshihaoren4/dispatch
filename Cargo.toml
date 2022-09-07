@@ -23,6 +23,7 @@ serde = "1.0"
 anyhow = "1.0"
 serde_json = "1.0.85"
 mongodb = "2.3.0"
+lazy_static = "1.4.0"
 
 [build-dependencies]
 tonic-build = {version = "0.6",features=["prost","compression"]}

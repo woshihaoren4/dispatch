@@ -161,8 +161,8 @@ pub struct CreateTaskRequest {
 pub struct CreateTaskResponse {
     #[prost(string, tag = "1")]
     pub task_code: ::prost::alloc::string::String,
-    #[prost(string, tag = "2")]
-    pub create_time: ::prost::alloc::string::String,
+    #[prost(int64, tag = "2")]
+    pub create_time: i64,
     #[prost(message, optional, tag = "100")]
     pub result: ::core::option::Option<CommonResult>,
 }

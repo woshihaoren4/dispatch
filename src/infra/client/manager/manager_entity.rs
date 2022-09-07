@@ -24,7 +24,7 @@ impl DataSourceCenter {
 
 
     // 拉取dao
-    pub async fn get_dao< 'a, T:Entity<'a> + 'static,D:Dao<'a,T>>(&self) -> Box<dyn Dao<'a,T>>{
+    pub async fn get_dao< 'a, T:Entity<'a> + 'static>(&self) -> Box<dyn Dao<'a,T>>{
         if let Some(ref m) = self.mongo {
             let dao:MongoDao<T> = m.get_dao::<T>().await;
             return Box::new(dao);

@@ -5,14 +5,14 @@ use std::task::{Context, Poll};
 pub trait LayerHyperInterceptor: Send + Sync {
     async fn request(
         &self,
-        ctx: wd_run::Context,
+        _ctx: wd_run::Context,
         request: hyper::Request<hyper::Body>,
     ) -> Result<hyper::Request<hyper::Body>, hyper::Response<tonic::body::BoxBody>> {
         return Ok(request);
     }
     async fn response(
         &self,
-        ctx: wd_run::Context,
+        _ctx: wd_run::Context,
         response: hyper::Response<tonic::body::BoxBody>,
     ) -> hyper::Response<tonic::body::BoxBody> {
         return response;
