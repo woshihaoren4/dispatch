@@ -41,10 +41,11 @@ message Task {
 }
 
 enum SubTaskStatus{
-  SubTaskStatus_CREATE = 0; //新建
-  SubTaskStatus_DISPATCHING = 1; //被调度
-  SubTaskStatus_COMPLETE = 2; //完成
-  SubTaskStatus_FAILED = 3; //失败  不再重新调度
+  SubTaskStatus_RETAIN = 0; //新建
+  SubTaskStatus_CREATE = 1; //新建
+  SubTaskStatus_DISPATCHING = 2; //被调度
+  SubTaskStatus_COMPLETE = 3; //完成
+  SubTaskStatus_FAILED = 4; //失败  不再重新调度
 }
 
 message SubTask{

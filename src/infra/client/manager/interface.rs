@@ -13,4 +13,5 @@ pub trait Dao <'a, E:Entity<'a>> : Send + Sync {
     async fn insert(&self, _: E)->anyhow::Result<E>;
     async fn find_by_code(&self,code:String)->anyhow::Result<Option<E>>;
     async fn update_by_code(&self,_:E) -> anyhow::Result<u64>;
+    async fn insert_many(&self, _: Vec<E>)->anyhow::Result<Vec<E>>;
 }

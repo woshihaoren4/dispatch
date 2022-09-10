@@ -1,7 +1,6 @@
-use std::any::Any;
 use mongodb::bson::{Bson, doc, Document};
 use mongodb::Collection;
-use mongodb::options::{ClientOptions, UpdateModifications};
+use mongodb::options::{ClientOptions};
 use serde_json::Value;
 use crate::conf::MongoDb;
 use crate::infra::client::manager::{ Dao, Entity};
@@ -134,5 +133,23 @@ where V: Entity<'a>
         let update_content = Self::value_to_document(value,vec!["".to_string(),id_key.clone()])?;
         let result = self.coll.update_one(doc! {id_key:id_value}, doc! {"$set":update_content}, None).await?;
         return Ok(result.modified_count)
+    }
+
+    async fn insert_many(&self, mut list: Vec<V>)->anyhow::Result<Vec<V>>{
+        let result = self.coll.insert_many(list.iter(), None).await?;
+        for (index,e) in list.iter_mut().enumerate(){
+            let id = match result.inserted_ids.get(&index){
+                None => {String::new()}
+                Some(s) => {
+                    match s {
+                        Bson::String(s) => {s.clone()}
+                        Bson::ObjectId(s) => {s.to_string()}
+                        _=>{String::new()}
+                    }
+                }
+            };
+            e.set_id(id);
+        }
+        return Ok(list)
     }
 }

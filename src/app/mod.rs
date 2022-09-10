@@ -9,7 +9,6 @@ use crate::pb;
 mod controls;
 mod middle;
 mod entity;
-mod dao;
 
 pub async fn application_run(_ctx: wd_run::Context, cfg: Config,dsc:Arc<client::DataSourceCenter>) {
     let layer = tower::ServiceBuilder::new()

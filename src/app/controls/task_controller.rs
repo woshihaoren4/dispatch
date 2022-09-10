@@ -4,7 +4,7 @@ use tonic::{Code, Request, Response, Status};
 use wd_log::log_info_ln;
 use crate::app::controls::Server;
 use crate::app::entity;
-use crate::app::entity::Task;
+use crate::app::entity::{SubTask, Task};
 use crate::pb::update_task_request::UpdateContent;
 
 
@@ -82,9 +82,25 @@ impl TaskManagerServices for super::Server{
                 }
             }
             2=>{} //UpdateTaskAction::UpdateTaskInfo
-            3=>{
-
-            } //UpdateTaskAction::AppendSubtasks
+            3=>{ //UpdateTaskAction::AppendSubtasks
+                let ast = match req.update_content.unwrap(){
+                    UpdateContent::SubTasks(subs) => subs,
+                    _ => {
+                        return Ok(Response::new(UpdateTaskResponse{ result: Server::response_err_result(400,format!("active is append sub task,but content is not AppendSubTask")) }))
+                    }
+                };
+                let sub_task_list = SubTask::from(ast,req.task_code);
+                let dao = self.dsc.get_dao().await;
+                let result = dao.insert_many(sub_task_list).await;
+                match result {
+                    Ok(_) => {
+                        return Ok(Response::new(UpdateTaskResponse{ result: Self::response_success() }))
+                    }
+                    Err(e) => {
+                        return Ok(Response::new(UpdateTaskResponse{ result: Server::response_err_result(500,format!("append sub task error:({})",e)) }))
+                    }
+                }
+            }
             4=>{} //UpdateTaskAction::UpdateSubtaskInfo
             _=>{}
         }

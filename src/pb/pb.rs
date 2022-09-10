@@ -121,13 +121,15 @@ pub enum TaskType {
 #[repr(i32)]
 pub enum SubTaskStatus {
     ///新建
-    Create = 0,
+    Retain = 0,
+    ///新建
+    Create = 1,
     ///被调度
-    Dispatching = 1,
+    Dispatching = 2,
     ///完成
-    Complete = 2,
+    Complete = 3,
     ///失败  不再重新调度
-    Failed = 3,
+    Failed = 4,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct CreateTaskSubTask {

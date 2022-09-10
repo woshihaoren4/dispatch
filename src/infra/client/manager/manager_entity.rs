@@ -50,4 +50,7 @@ impl<'a, V> Dao<'a,V> for DefaultDao
     async fn update_by_code(&self, _: V) -> anyhow::Result<u64> {
         return Err(anyhow::anyhow!("DefaultDao"))
     }
+    async fn insert_many(&self, _: Vec<V>)->anyhow::Result<Vec<V>>{
+        return Err(anyhow::anyhow!("DefaultDao"))
+    }
 }
