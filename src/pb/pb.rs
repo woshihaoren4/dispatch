@@ -38,11 +38,11 @@ pub struct SubTask {
     pub description: ::prost::alloc::string::String,
     #[prost(enumeration = "SubTaskStatus", tag = "4")]
     pub status: i32,
-    #[prost(string, tag = "6")]
-    pub create_time: ::prost::alloc::string::String,
+    #[prost(int64, tag = "6")]
+    pub create_time: i64,
     ///上次被调度的时间
-    #[prost(string, tag = "7")]
-    pub last_dispatch_time: ::prost::alloc::string::String,
+    #[prost(int64, tag = "7")]
+    pub last_dispatch_time: i64,
     ///版本号，随着调度次数增加
     #[prost(uint32, tag = "8")]
     pub version: u32,
@@ -90,28 +90,32 @@ pub struct CommonResult {
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
 #[repr(i32)]
 pub enum TaskStatus {
+    ///保留
+    Keep = 0,
     ///新建
-    Created = 0,
+    Created = 1,
     ///初始化完成
-    Initialized = 1,
+    Initialized = 2,
     ///开始分发
-    Launching = 2,
+    Launching = 3,
     ///停止
-    Stop = 3,
+    Stop = 4,
     ///结束
-    Over = 4,
+    Over = 5,
     ///关闭
-    Close = 5,
+    Close = 6,
 }
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
 #[repr(i32)]
 pub enum TaskType {
+    ///go和rust中0值处理问题
+    Keep = 0,
     ///批处理任务
-    Batch = 0,
+    Batch = 1,
     ///定时任务
-    Timing = 1,
+    Timing = 2,
     ///状态集群任务
-    Election = 2,
+    Election = 3,
 }
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
 #[repr(i32)]
@@ -151,11 +155,10 @@ pub struct CreateTaskRequest {
     pub start_time: i64,
     #[prost(int64, tag = "6")]
     pub end_time: i64,
+    ///  repeated CreateTaskSubTask sub_tasks = 8;
+    ///todo  DispatchPolicy policy = 10; //超时策略
     #[prost(string, repeated, tag = "7")]
     pub tags: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
-    ///todo  DispatchPolicy policy = 10; //超时策略
-    #[prost(message, repeated, tag = "8")]
-    pub sub_tasks: ::prost::alloc::vec::Vec<CreateTaskSubTask>,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct CreateTaskResponse {
@@ -294,10 +297,11 @@ pub struct SearchSubTaskResponse {
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
 #[repr(i32)]
 pub enum UpdateTaskAction {
-    UpdateStatus = 0,
-    UpdateTaskInfo = 1,
-    AppendSubtasks = 2,
-    UpdateSubtaskInfo = 3,
+    Keep = 0,
+    UpdateStatus = 1,
+    UpdateTaskInfo = 2,
+    AppendSubtasks = 3,
+    UpdateSubtaskInfo = 4,
 }
 #[doc = r" Generated client implementations."]
 pub mod task_manager_services_client {

@@ -42,4 +42,12 @@ impl<'a, V> Dao<'a,V> for DefaultDao
     async fn insert(&self, _:V) -> anyhow::Result<V> {
         return Err(anyhow::anyhow!("DefaultDao"))
     }
+
+    async fn find_by_code(&self, _code: String) -> anyhow::Result<Option<V>> {
+        return Err(anyhow::anyhow!("DefaultDao"))
+    }
+
+    async fn update_by_code(&self, _: V) -> anyhow::Result<u64> {
+        return Err(anyhow::anyhow!("DefaultDao"))
+    }
 }

@@ -9,18 +9,20 @@ option java_outer_classname = "Message";
 import "google/protobuf/struct.proto";
 
 enum TaskStatus{
-  TaskStatus_CREATED = 0; //新建
-  TaskStatus_INITIALIZED = 1; //初始化完成
-  TaskStatus_LAUNCHING = 2; //开始分发
-  TaskStatus_STOP = 3; //停止
-  TaskStatus_OVER = 4; //结束
-  TaskStatus_CLOSE = 5; //关闭
+  TaskStatus_KEEP = 0; //保留
+  TaskStatus_CREATED = 1; //新建
+  TaskStatus_INITIALIZED = 2; //初始化完成
+  TaskStatus_LAUNCHING = 3; //开始分发
+  TaskStatus_STOP = 4; //停止
+  TaskStatus_OVER = 5; //结束
+  TaskStatus_CLOSE = 6; //关闭
 }
 
 enum TaskType{
-  Batch = 0; //批处理任务
-  Timing = 1; //定时任务
-  Election = 2; //状态集群任务
+  Keep = 0;  //go和rust中0值处理问题
+  Batch = 1; //批处理任务
+  Timing = 2; //定时任务
+  Election = 3; //状态集群任务
 }
 
 message Task {
@@ -50,8 +52,8 @@ message SubTask{
   string sub_task_name = 2;
   string description = 3;
   SubTaskStatus status = 4;
-  string create_time = 6;
-  string last_dispatch_time = 7; //上次被调度的时间
+  int64 create_time = 6;
+  int64 last_dispatch_time = 7; //上次被调度的时间
   uint32 version = 8; //版本号，随着调度次数增加
   string extern = 9; //扩展信息
 }

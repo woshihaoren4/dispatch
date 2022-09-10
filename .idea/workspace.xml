@@ -7,27 +7,20 @@
     <cargoProject FILE="$PROJECT_DIR$/Cargo.toml" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="603ca18f-9ba9-4a5a-a98d-4535cd07062f" name="Changes" comment="连接数据库完成">
-      <change afterPath="$PROJECT_DIR$/src/app/controls/server.rs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/infra/util/mod.rs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/infra/util/sony_flake.rs" afterDir="false" />
+    <list default="true" id="603ca18f-9ba9-4a5a-a98d-4535cd07062f" name="Changes" comment="优化项目结构">
+      <change afterPath="$PROJECT_DIR$/src/app/controls/util.rs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/entity/sub_task.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Cargo.lock" beforeDir="false" afterPath="$PROJECT_DIR$/Cargo.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Cargo.toml" beforeDir="false" afterPath="$PROJECT_DIR$/Cargo.toml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/proto/message.proto" beforeDir="false" afterPath="$PROJECT_DIR$/proto/message.proto" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/proto/task_services.proto" beforeDir="false" afterPath="$PROJECT_DIR$/proto/task_services.proto" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/app/controls/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/controls/mod.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/controls/server.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/controls/server.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/app/controls/task_controller.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/controls/task_controller.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/entity/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/entity/mod.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/app/entity/task.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/entity/task.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/middle/concurrent_interceptor.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/middle/concurrent_interceptor.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/middle/log_interceptor.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/middle/log_interceptor.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/mod.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cmd/run.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/cmd/run.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/conf/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/conf/mod.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/infra/client/manager/interface.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/infra/client/manager/interface.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/infra/client/manager/manager_entity.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/infra/client/manager/manager_entity.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/infra/client/mongo/client.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/infra/client/mongo/client.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/infra/middle/common.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/infra/middle/common.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/infra/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/infra/mod.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/pb/pb.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/pb/pb.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/pb/services_descriptor.bin" beforeDir="false" afterPath="$PROJECT_DIR$/src/pb/services_descriptor.bin" afterDir="false" />
     </list>
@@ -273,7 +266,8 @@
     <MESSAGE value="改变一下结构" />
     <MESSAGE value="初始化数据库" />
     <MESSAGE value="连接数据库完成" />
-    <option name="LAST_COMMIT_MESSAGE" value="连接数据库完成" />
+    <MESSAGE value="优化项目结构" />
+    <option name="LAST_COMMIT_MESSAGE" value="优化项目结构" />
   </component>
   <component name="VgoProject">
     <settings-migrated>true</settings-migrated>

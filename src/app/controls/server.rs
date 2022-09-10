@@ -1,6 +1,6 @@
 use std::sync::Arc;
 use crate::infra::client::DataSourceCenter;
-use crate::pb::CommonResult;
+use crate::pb::TaskStatus;
 
 pub struct Server {
     pub dsc : Arc<DataSourceCenter>
@@ -10,11 +10,38 @@ impl Server {
     pub fn new(dsc : Arc<DataSourceCenter>) -> Self {
         return Self {dsc};
     }
-    pub fn response_success() ->Option<CommonResult>{
-        Some(CommonResult{
-            code: 0,
-            message: "success".to_string(),
-            payload: None
-        })
+}
+
+impl Server{
+    pub fn fsm(old:TaskStatus,new:TaskStatus)->bool{
+        match old {
+            TaskStatus::Created => {
+                match new {
+                    TaskStatus::Initialized | TaskStatus::Close=>true,
+                    _=>false,
+                }
+            }
+            TaskStatus::Initialized => {
+                match new {
+                    TaskStatus::Close | TaskStatus::Stop=>true,
+                    _=>false
+                }
+            }
+            TaskStatus::Launching => {
+                match new {
+                    TaskStatus::Stop | TaskStatus::Over | TaskStatus::Close=>true,
+                    _=>false
+                }
+            }
+            TaskStatus::Stop => {
+                match new {
+                    TaskStatus::Initialized | TaskStatus::Close =>true,
+                    _=>false
+                }
+            }
+            TaskStatus::Over => false,
+            TaskStatus::Close => false,
+            TaskStatus::Keep => false,
+        }
     }
 }

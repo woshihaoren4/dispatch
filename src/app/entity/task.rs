@@ -3,6 +3,7 @@ use crate::infra::*;
 use crate::pb;
 use serde::{Serialize,Deserialize};
 use crate::infra::client::Entity;
+use crate::pb::TaskStatus;
 
 #[derive(Debug,Clone,Serialize,Deserialize,Default)]
 pub struct Task{
@@ -18,6 +19,20 @@ pub struct Task{
     pub create_time: i64
 }
 
+impl Task {
+    pub fn number_to_task_status(n:u8)->TaskStatus{
+        match n {
+            1=>TaskStatus::Created,
+            2=>TaskStatus::Initialized,
+            3=>TaskStatus::Launching,
+            4=>TaskStatus::Stop,
+            5=>TaskStatus::Over,
+            6=>TaskStatus::Close,
+            _=>TaskStatus::Keep,
+        }
+    }
+}
+
 impl Entity<'_> for Task {
     fn bucket() -> String {
         "task".to_string()
@@ -25,6 +40,10 @@ impl Entity<'_> for Task {
 
     fn set_id(&mut self, id: String) {
         wd_log::log_info_ln!("entity::Task id callback:({})",id)
+    }
+
+    fn get_id(&mut self) -> (String, String) {
+        return ("task_code".to_string(),self.task_code.clone())
     }
 }
 
@@ -41,6 +60,7 @@ impl From<pb::CreateTaskRequest> for Task {
             end_time: req.end_time,
             create_time: utc,
             tags: req.tags,
+            status: 1, //状态默认是1
             ..Task::default()
         };
         return t;

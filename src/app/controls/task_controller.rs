@@ -1,7 +1,11 @@
 use crate::pb::task_manager_services_server::TaskManagerServices;
-use crate::pb::{ CreateTaskRequest, CreateTaskResponse, SearchSubTaskRequest, SearchSubTaskResponse, SearchTaskRequest, SearchTaskResponse, UpdateTaskRequest, UpdateTaskResponse};
+use crate::pb::{CommonResult, CreateTaskRequest, CreateTaskResponse, SearchSubTaskRequest, SearchSubTaskResponse, SearchTaskRequest, SearchTaskResponse, UpdateTaskRequest, UpdateTaskResponse};
 use tonic::{Code, Request, Response, Status};
+use wd_log::log_info_ln;
+use crate::app::controls::Server;
 use crate::app::entity;
+use crate::app::entity::Task;
+use crate::pb::update_task_request::UpdateContent;
 
 
 #[async_trait::async_trait]
@@ -10,7 +14,14 @@ impl TaskManagerServices for super::Server{
         &self,
         request: Request<CreateTaskRequest>,
     ) -> Result<Response<CreateTaskResponse>, Status> {
-        //todo 参数校验
+        //参数校验
+        if let Err(e) = Self::create_task_request_check(&request){
+            return Ok(Response::new(CreateTaskResponse {
+                task_code: String::new(),
+                create_time: 0,
+                result: Some(e)
+            }))
+        }
         //创建task
         let t = entity::Task::from(request.into_inner());
         let dao = self.dsc.get_dao::<entity::Task>().await;
@@ -31,8 +42,52 @@ impl TaskManagerServices for super::Server{
 
     async fn update_task(
         &self,
-        _request: Request<UpdateTaskRequest>,
+        request: Request<UpdateTaskRequest>,
     ) -> Result<Response<UpdateTaskResponse>, Status> {
+        //验参
+        let result = self.update_task_request_check(&request).await;
+        let t = match result {
+            Ok(t) => {t}
+            Err(e) => {
+                return Ok(Response::new(UpdateTaskResponse{ result: Some(e) }))
+            }
+        };
+        log_info_ln!("find task success:{:?}",t);
+        //更新任务
+        let req = request.into_inner();
+
+        match req.action {
+            1=>{ //UpdateTaskAction::UpdateStatus
+                let status = match req.update_content.unwrap() {
+                    UpdateContent::Status(s) => {s}
+                    _ =>{0}
+                };
+                let old = Task::number_to_task_status(t.status);
+                let status = Task::number_to_task_status(status as u8);
+                if !Self::fsm(old,status) {
+                    return Ok(Response::new(UpdateTaskResponse{ result: Server::response_err_result(400,format!("task status({:?}) can not to status({:?})",old,status)) }))
+                }
+                let dao = self.dsc.get_dao().await;
+                let mut update_task = Task::default();
+                update_task.task_code = t.task_code.clone();
+                update_task.status = status as u8;
+                let result = dao.update_by_code(update_task).await;
+                return match result {
+                    Ok(_) => {
+                        Ok(Response::new(UpdateTaskResponse { result: Self::response_success() }))
+                    }
+                    Err(e) => {
+                        Ok(Response::new(UpdateTaskResponse { result: Self::response_err_result(500, e) }))
+                    }
+                }
+            }
+            2=>{} //UpdateTaskAction::UpdateTaskInfo
+            3=>{
+
+            } //UpdateTaskAction::AppendSubtasks
+            4=>{} //UpdateTaskAction::UpdateSubtaskInfo
+            _=>{}
+        }
         return Err(Status::new(Code::Unknown, "not found"));
     }
 
@@ -48,5 +103,37 @@ impl TaskManagerServices for super::Server{
         _request: Request<SearchSubTaskRequest>,
     ) -> Result<Response<SearchSubTaskResponse>, Status> {
         return Err(Status::new(Code::Unknown, "not found"));
+    }
+}
+
+impl super::Server{
+    fn create_task_request_check(req:& Request<CreateTaskRequest>)->Result<(), CommonResult>{
+        let req = req.get_ref();
+        bad_request!(req.task_name.len()>64,"name len > 64");
+        bad_request!(req.description.len()>512,"description len > 521");
+        bad_request!(req.end_time==0,"end time is 0");
+        match req.r#type {
+            #[allow(ellipsis_inclusive_range_patterns)]
+            1 ... 3 =>{}
+            _=>bad_request!(true,"unknown task type:{}",req.r#type),
+        }
+        Ok(())
+    }
+    async fn update_task_request_check(&self,req:&Request<UpdateTaskRequest>)->Result<entity::Task,CommonResult>{
+        bad_request!(req.get_ref().task_code.is_empty(),"request code is empty");
+        bad_request!(req.get_ref().action <= 0 || req.get_ref().action > 4,"unknown action");
+        bad_request!(req.get_ref().update_content.is_none(),"content is nil");
+        let dao = self.dsc.get_dao::<Task>().await;
+        let result = dao.find_by_code(req.get_ref().task_code.clone()).await;
+        let opt = match result {
+            Ok(o)=>o,
+            Err(e)=>{
+                server_error!("{}",e);
+            }
+        };
+        if opt.is_none(){
+            bad_request!(true,"have not task by the code");
+        }
+        return Ok(opt.unwrap());
     }
 }

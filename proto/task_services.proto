@@ -21,7 +21,7 @@ service TaskManagerServices {
   //修改任务
   rpc UpdateTask(UpdateTaskRequest) returns(UpdateTaskResponse){
     option (google.api.http) = {
-      post: "/api/v1/task/{task__code}/update/{action}"
+      post: "/api/v1/task/{task_code}/update/{action}"
       body: "*"
     };
   }
@@ -53,7 +53,7 @@ message CreateTaskRequest {
   int64 start_time = 5;
   int64 end_time = 6;
   repeated string tags = 7;
-  repeated CreateTaskSubTask sub_tasks = 8;
+//  repeated CreateTaskSubTask sub_tasks = 8;
   //todo  DispatchPolicy policy = 10; //超时策略
 }
 message CreateTaskResponse{
@@ -62,10 +62,11 @@ message CreateTaskResponse{
   CommonResult result = 100;
 }
 enum UpdateTaskAction {
-  UPDATE_STATUS = 0;
-  UPDATE_TASK_INFO = 1;
-  APPEND_SUBTASKS = 2;
-  UPDATE_SUBTASK_INFO = 3;
+  KEEP = 0;
+  UPDATE_STATUS = 1;
+  UPDATE_TASK_INFO = 2;
+  APPEND_SUBTASKS = 3;
+  UPDATE_SUBTASK_INFO = 4;
 }
 
 message UpdateTaskInfo{
@@ -78,13 +79,13 @@ message AppendSubTask{
   repeated CreateTaskSubTask sub_tasks = 1;
 }
 message UpdateSubTaskInfo{
-  string sub_task__code = 1;
+  string sub_task_code = 1;
   string sub_task_name = 2;
   string description = 3;
   string extern = 4; //扩展信息
 }
 message UpdateTaskRequest{
-  string task__code = 1;
+  string task_code = 1;
   UpdateTaskAction action = 2;
   oneof update_content{
     TaskStatus status = 100;
@@ -97,7 +98,7 @@ message UpdateTaskResponse{
   CommonResult result = 100;
 }
 message SearchTaskRequest{
-  string task__code = 1;
+  string task_code = 1;
   string name = 2;
   TaskType type = 3;
   TaskStatus status = 4;
@@ -113,9 +114,9 @@ message SearchTaskResponse{
   CommonResult result = 100;
 }
 message SearchSubTaskRequest{
-  string sub_task__code = 1;
+  string sub_task_code = 1;
   string sub_name = 2;
-  string task__code = 3; //父任务的_code
+  string task_code = 3; //父任务的_code
   SubTaskStatus status = 4;
   int64 start_time = 5;
   int64 end_time = 6;
