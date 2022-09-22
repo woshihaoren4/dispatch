@@ -1,9 +1,11 @@
+use futures::{ TryStreamExt};
 use mongodb::bson::{Bson, doc, Document};
 use mongodb::Collection;
 use mongodb::options::{ClientOptions};
 use serde_json::Value;
 use crate::conf::MongoDb;
 use crate::infra::client::manager::{ Dao, Entity};
+use crate::infra::client::QueryOption;
 
 
 pub struct MongoClient{
@@ -103,6 +105,57 @@ impl<V> MongoDao<V> {
         }
         return Ok(doc)
     }
+    pub fn query_option_to_document(qs:Vec<(String, QueryOption)>)->Document{
+        let mut d = Document::new();
+        for (k,i) in qs.into_iter(){
+            match i {
+                QueryOption::Equal(e) => {
+                    let bs = Self::value_to_bson(e);
+                    if bs != Bson::Null {
+                        d.insert(k,bs);
+                    }
+                }
+                QueryOption::GreaterThan(gt) => {
+                    let bs = Self::value_to_bson(gt);
+                    if bs != Bson::Null {
+                        d.insert(k,doc! {"$gt":bs});
+                    }
+                }
+                QueryOption::LessThan(lt) => {
+                    let bs = Self::value_to_bson(lt);
+                    if bs != Bson::Null {
+                        d.insert(k,doc! {"$lt":bs});
+                    }
+                }
+                QueryOption::BetweenAnd(start, end) => {
+                    let start = Self::value_to_bson(start);
+                    let end = Self::value_to_bson(end);
+                    if start != Bson::Null && end != Bson::Null {
+                        d.insert(k,doc! {"$gt":start,"$lt":end});
+                    }
+                }
+                QueryOption::Like(lk) => {
+                    let bs = Self::value_to_bson(lk);
+                    if bs != Bson::Null  {
+                        if let Some(s) = bs.as_str() {
+                            d.insert(k,doc! {"$regex":format!("/{}/",s)});
+                        }
+
+                    }
+                }
+                // QueryOption::Sort(sort,asc)=>{
+                //     if !sort.is_empty() {
+                //         d.insert("$sort",doc! {sort:asc});
+                //     }
+                // }
+                // QueryOption::Limit(size,page)=>{
+                //     d.insert("$limit",Bson::Int64(size));
+                //     d.insert("$skip",Bson::Int64(size*(page-1)));
+                // }
+            }
+        }
+        return d;
+    }
 }
 
 impl<V> From<Collection<V>> for MongoDao<V> {
@@ -151,5 +204,14 @@ where V: Entity<'a>
             e.set_id(id);
         }
         return Ok(list)
+    }
+    async fn find(&self, qs:Vec<(String, QueryOption)>) ->anyhow::Result<(Vec<V>,i64)>{
+        let mut list = vec![];
+        let query = Self::query_option_to_document(qs);
+        let mut cursor = self.coll.find(query, None).await?;
+        while let Some(doc) = cursor.try_next().await? {
+            list.push(doc);
+        }
+        return Ok((list,0));
     }
 }

@@ -1,6 +1,7 @@
 use crate::infra::client::manager::Entity;
 use crate::infra::client::manager::interface:: Dao;
 use crate::infra::client::mongo::{MongoClient, MongoDao};
+use crate::infra::client::QueryOption;
 
 // pub struct ClientManagerBuild{
 //     clients : HashMap<String,Arc<dyn Client>>
@@ -51,6 +52,9 @@ impl<'a, V> Dao<'a,V> for DefaultDao
         return Err(anyhow::anyhow!("DefaultDao"))
     }
     async fn insert_many(&self, _: Vec<V>)->anyhow::Result<Vec<V>>{
+        return Err(anyhow::anyhow!("DefaultDao"))
+    }
+    async fn find(&self, _:Vec<(String, QueryOption)>) ->anyhow::Result<(Vec<V>,i64)>{
         return Err(anyhow::anyhow!("DefaultDao"))
     }
 }

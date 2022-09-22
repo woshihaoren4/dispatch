@@ -111,6 +111,30 @@ impl TaskManagerServices for super::Server{
         &self,
         _request: Request<SearchTaskRequest>,
     ) -> Result<Response<SearchTaskResponse>, Status> {
+        //todo 验参
+        // let req = request.into_inner();
+        // let mut query = vec![];
+        // query.push(("task_code".to_string(),QueryOption::Equal(Value::String(req.task_code))));
+        // query.push(("name".to_string(),QueryOption::Like(Value::String(req.name))));
+        // query.push(("type".to_string(),QueryOption::Equal(Value::Number(Number::from(req.r#type)))));
+        // query.push(("status".to_string(),QueryOption::Equal(Value::Number(Number::from(req.status)))));
+        // query.push(("create_time".to_string(),QueryOption::BetweenAnd(Value::Number(Number::from(req.start_time)), Value::Number(Number::from(req.end_time)))));
+        // query.push(("offset".to_string(),QueryOption::Limit(req.size as i64,req.page as i64)));
+        // query.push(("sort".to_string(),QueryOption::Sort(req.sort,-1)));
+        //
+        // let dao = self.dsc.get_dao::<Task>().await;
+        // let result = dao.find(query).await;
+        // match result {
+        //     Ok(item) => {
+        //         return Ok(Response::new(SearchTaskResponse{
+        //             tasks:  item,
+        //             total: 0,
+        //             result: None
+        //         }))
+        //     }
+        //     Err(e) => {}
+        // }
+
         return Err(Status::new(Code::Unknown, "not found"));
     }
 

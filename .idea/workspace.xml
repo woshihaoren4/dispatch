@@ -7,20 +7,16 @@
     <cargoProject FILE="$PROJECT_DIR$/Cargo.toml" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="603ca18f-9ba9-4a5a-a98d-4535cd07062f" name="Changes" comment="修改任务状态">
+    <list default="true" id="603ca18f-9ba9-4a5a-a98d-4535cd07062f" name="Changes" comment="添加子任务">
+      <change afterPath="$PROJECT_DIR$/src/infra/election/election_interface.rs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/infra/election/election_manager.rs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/infra/election/mod.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/proto/message.proto" beforeDir="false" afterPath="$PROJECT_DIR$/proto/message.proto" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/app/controls/task_controller.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/controls/task_controller.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/dao/mod.rs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/dao/task_dao.rs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/entity/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/entity/mod.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/entity/sub_task.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/entity/sub_task.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/mod.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/infra/client/manager/interface.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/infra/client/manager/interface.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/infra/client/manager/manager_entity.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/infra/client/manager/manager_entity.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/infra/client/mongo/client.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/infra/client/mongo/client.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pb/pb.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/pb/pb.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pb/services_descriptor.bin" beforeDir="false" afterPath="$PROJECT_DIR$/src/pb/services_descriptor.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/infra/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/infra/mod.rs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -265,7 +261,8 @@
     <MESSAGE value="连接数据库完成" />
     <MESSAGE value="优化项目结构" />
     <MESSAGE value="修改任务状态" />
-    <option name="LAST_COMMIT_MESSAGE" value="修改任务状态" />
+    <MESSAGE value="添加子任务" />
+    <option name="LAST_COMMIT_MESSAGE" value="添加子任务" />
   </component>
   <component name="VgoProject">
     <settings-migrated>true</settings-migrated>
