@@ -1,8 +1,6 @@
-use std::os::macos::raw::stat;
 use std::sync::{Arc, Mutex};
-use std::sync::atomic::{AtomicBool, AtomicU8, Ordering};
-use tokio::time::error::Elapsed;
-use super::{Election,Master};
+use std::sync::atomic::{ AtomicU8, Ordering};
+use super::{Election, MasterAndWorker};
 
 pub struct ElectionManager{
     status : Arc<AtomicU8>, // 状态：
@@ -10,9 +8,10 @@ pub struct ElectionManager{
     master : Arc<Mutex<String>>, //主节点名字
     election : Arc<dyn Election>, //选举器
     master_is_worker: bool, //是否允许主节点工作
-    handler : Arc<dyn Master>, //调用函数
+    handler : Arc<dyn MasterAndWorker>, //调用函数
     ele_interval: std::time::Duration,
 }
+
 pub struct ElectionManagerClose{
     status : Arc<AtomicU8>,
 }
@@ -41,7 +40,7 @@ impl ElectionManagerClose {
 impl ElectionManager {
     pub fn build<E,M>(e:E,m:M)->Self
     where E:Election+ 'static,
-    M:Master+ 'static,
+    M: MasterAndWorker + 'static,
     {
         let status = Arc::new(AtomicU8::new(1));
         let name = m.name();

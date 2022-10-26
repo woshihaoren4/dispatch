@@ -13,16 +13,19 @@ pub struct Task {
     ///utc 结束时间
     #[prost(int64, tag = "5")]
     pub end_time: i64,
-    #[prost(enumeration = "TaskType", tag = "6")]
+    ///utc 创建时间
+    #[prost(int64, tag = "6")]
+    pub create_time: i64,
+    #[prost(enumeration = "TaskType", tag = "7")]
     pub r#type: i32,
-    #[prost(enumeration = "TaskStatus", tag = "7")]
+    #[prost(enumeration = "TaskStatus", tag = "8")]
     pub status: i32,
     ///任务触发的时候会传递给执行者
-    #[prost(string, tag = "8")]
+    #[prost(string, tag = "9")]
     pub config: ::prost::alloc::string::String,
-    #[prost(string, repeated, tag = "9")]
+    #[prost(string, repeated, tag = "10")]
     pub tags: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
-    #[prost(message, optional, tag = "10")]
+    #[prost(message, optional, tag = "11")]
     pub policy: ::core::option::Option<DispatchPolicy>,
     ///子任务 被调度的单元
     #[prost(message, repeated, tag = "100")]
@@ -247,12 +250,15 @@ pub struct SearchTaskRequest {
     pub start_time: i64,
     #[prost(int64, tag = "6")]
     pub end_time: i64,
-    #[prost(int32, tag = "7")]
+    ///含有这些标签的任务，含有一个或多个
+    #[prost(string, repeated, tag = "7")]
+    pub contain_tags: ::prost::alloc::vec::Vec<::prost::alloc::string::String>,
+    #[prost(int32, tag = "100")]
     pub size: i32,
-    #[prost(int32, tag = "8")]
+    #[prost(int32, tag = "101")]
     pub page: i32,
     ///default:"create_time desc"
-    #[prost(string, tag = "9")]
+    #[prost(string, tag = "102")]
     pub sort: ::prost::alloc::string::String,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]

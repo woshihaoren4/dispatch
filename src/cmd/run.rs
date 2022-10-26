@@ -3,7 +3,7 @@ use std::future::Future;
 use std::pin::Pin;
 use std::sync::Arc;
 use wd_run::{CmdInfo, Context};
-use crate::infra::client::{DataSourceCenter, MongoClient};
+use crate::infra::client::{DataSourceCenter, MongoClient, Redis};
 
 pub struct AppRun {}
 
@@ -26,6 +26,7 @@ impl AppRun {
 
     pub async fn init_database_source(cfg:Config)->anyhow::Result<Arc<DataSourceCenter>>{
         let mut dsc = DataSourceCenter::new();
+        //初始化数据库
         match cfg.data_source.driver {
             DataSourceDriver::Mysql => {}
             DataSourceDriver::Postgresql => {}
@@ -35,6 +36,9 @@ impl AppRun {
                 wd_log::log_info_ln!("init mongodb success url:{}",url);
             }
         }
+        //初始化redis缓存
+        let client = Redis::new(cfg.cache).await?;
+        dsc = dsc.register_redis(client);
 
         return Ok(Arc::new(dsc))
     }
@@ -47,7 +51,6 @@ impl wd_run::EventHandle for AppRun {
             //加载配置文件
             let cfg = AppRun::load_config_ctx(&ctx).await;
             wd_log::log_info_ln!("config load success: {}", cfg.to_string());
-
             //初始化数据源
             let dsc = AppRun::init_database_source(cfg.clone()).await.unwrap();
             //启动服务

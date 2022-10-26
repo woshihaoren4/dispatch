@@ -7,16 +7,30 @@
     <cargoProject FILE="$PROJECT_DIR$/Cargo.toml" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="603ca18f-9ba9-4a5a-a98d-4535cd07062f" name="Changes" comment="添加子任务">
-      <change afterPath="$PROJECT_DIR$/src/infra/election/election_interface.rs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/infra/election/election_manager.rs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/infra/election/mod.rs" afterDir="false" />
+    <list default="true" id="603ca18f-9ba9-4a5a-a98d-4535cd07062f" name="Changes" comment="增加选举模块">
+      <change afterPath="$PROJECT_DIR$/src/app/schedule/mod.rs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/schedule/task_dispatch.rs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/infra/client/redis/mod.rs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/infra/client/redis/redis_election.rs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/infra/client/redis/redis_pool.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Cargo.lock" beforeDir="false" afterPath="$PROJECT_DIR$/Cargo.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Cargo.toml" beforeDir="false" afterPath="$PROJECT_DIR$/Cargo.toml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/proto/message.proto" beforeDir="false" afterPath="$PROJECT_DIR$/proto/message.proto" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/proto/task_services.proto" beforeDir="false" afterPath="$PROJECT_DIR$/proto/task_services.proto" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/app/controls/task_controller.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/controls/task_controller.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/entity/task.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/entity/task.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/mod.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/cmd/run.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/cmd/run.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/conf/config.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/conf/config.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/infra/client/manager/interface.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/infra/client/manager/interface.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/infra/client/manager/manager_entity.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/infra/client/manager/manager_entity.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/infra/client/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/infra/client/mod.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/infra/client/mongo/client.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/infra/client/mongo/client.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/infra/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/infra/mod.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/infra/election/election_interface.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/infra/election/election_interface.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/infra/election/election_manager.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/infra/election/election_manager.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pb/pb.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/pb/pb.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pb/services_descriptor.bin" beforeDir="false" afterPath="$PROJECT_DIR$/src/pb/services_descriptor.bin" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -120,7 +134,7 @@
       <recent name="$PROJECT_DIR$/src/infra" />
     </key>
   </component>
-  <component name="RunManager" selected="Cargo.Test app::entity::task::test::test_utc_time">
+  <component name="RunManager" selected="Cargo.Test infra::client::redis::redis_election::test::test_election">
     <configuration name="Run server (1)" type="CargoCommandRunConfiguration" factoryName="Cargo Command" temporary="true">
       <option name="command" value="run --package dispatch --bin server" />
       <option name="workingDirectory" value="file://$PROJECT_DIR$" />
@@ -206,6 +220,23 @@
         <option name="CARGO.BUILD_TASK_PROVIDER" enabled="true" />
       </method>
     </configuration>
+    <configuration name="Test infra::client::redis::redis_election::test::test_election" type="CargoCommandRunConfiguration" factoryName="Cargo Command" temporary="true">
+      <option name="command" value="test --package dispatch --bin server infra::client::redis::redis_election::test::test_election -- --exact" />
+      <option name="workingDirectory" value="file://$PROJECT_DIR$" />
+      <option name="channel" value="DEFAULT" />
+      <option name="requiredFeatures" value="true" />
+      <option name="allFeatures" value="false" />
+      <option name="emulateTerminal" value="false" />
+      <option name="withSudo" value="false" />
+      <option name="buildTarget" value="REMOTE" />
+      <option name="backtrace" value="SHORT" />
+      <envs />
+      <option name="isRedirectInput" value="false" />
+      <option name="redirectInputPath" value="" />
+      <method v="2">
+        <option name="CARGO.BUILD_TASK_PROVIDER" enabled="true" />
+      </method>
+    </configuration>
     <configuration default="true" type="GoApplicationRunConfiguration" factoryName="Go Application">
       <module name="dispatch" />
       <working_directory value="$PROJECT_DIR$" />
@@ -227,6 +258,7 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Cargo.Test infra::client::redis::redis_election::test::test_election" />
         <item itemvalue="Cargo.Test app::entity::task::test::test_utc_time" />
         <item itemvalue="Cargo.Test conf::test::test_load_config" />
         <item itemvalue="Cargo.Run server (1)" />
@@ -262,7 +294,8 @@
     <MESSAGE value="优化项目结构" />
     <MESSAGE value="修改任务状态" />
     <MESSAGE value="添加子任务" />
-    <option name="LAST_COMMIT_MESSAGE" value="添加子任务" />
+    <MESSAGE value="增加选举模块" />
+    <option name="LAST_COMMIT_MESSAGE" value="增加选举模块" />
   </component>
   <component name="VgoProject">
     <settings-migrated>true</settings-migrated>

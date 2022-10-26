@@ -7,7 +7,7 @@ pub trait Node{
 }
 
 #[async_trait::async_trait]
-pub trait Master:Node+Send+Sync{
+pub trait MasterAndWorker:Node+Send+Sync{
     async fn master_start(&self){ //当选时执行
 
     }

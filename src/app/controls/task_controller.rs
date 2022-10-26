@@ -1,3 +1,4 @@
+use serde_json::{Number, Value};
 use crate::pb::task_manager_services_server::TaskManagerServices;
 use crate::pb::{CommonResult, CreateTaskRequest, CreateTaskResponse, SearchSubTaskRequest, SearchSubTaskResponse, SearchTaskRequest, SearchTaskResponse, UpdateTaskRequest, UpdateTaskResponse};
 use tonic::{Code, Request, Response, Status};
@@ -5,6 +6,7 @@ use wd_log::log_info_ln;
 use crate::app::controls::Server;
 use crate::app::entity;
 use crate::app::entity::{SubTask, Task};
+use crate::infra::client::QueryOption;
 use crate::pb::update_task_request::UpdateContent;
 
 
@@ -109,31 +111,46 @@ impl TaskManagerServices for super::Server{
 
     async fn search_task(
         &self,
-        _request: Request<SearchTaskRequest>,
+        request: Request<SearchTaskRequest>,
     ) -> Result<Response<SearchTaskResponse>, Status> {
         //todo 验参
-        // let req = request.into_inner();
-        // let mut query = vec![];
-        // query.push(("task_code".to_string(),QueryOption::Equal(Value::String(req.task_code))));
-        // query.push(("name".to_string(),QueryOption::Like(Value::String(req.name))));
-        // query.push(("type".to_string(),QueryOption::Equal(Value::Number(Number::from(req.r#type)))));
-        // query.push(("status".to_string(),QueryOption::Equal(Value::Number(Number::from(req.status)))));
-        // query.push(("create_time".to_string(),QueryOption::BetweenAnd(Value::Number(Number::from(req.start_time)), Value::Number(Number::from(req.end_time)))));
+        let req = request.into_inner();
+        let mut query = vec![];
+        query.push(("task_code".to_string(),QueryOption::Equal(Value::String(req.task_code))));
+        query.push(("task_name".to_string(),QueryOption::Like(Value::String(req.name))));
+        query.push(("type".to_string(),QueryOption::Equal(Value::Number(Number::from(req.r#type)))));
+        query.push(("status".to_string(),QueryOption::Equal(Value::Number(Number::from(req.status)))));
+        query.push(("create_time".to_string(),QueryOption::BetweenAnd(Value::Number(Number::from(req.start_time)), Value::Number(Number::from(req.end_time)))));
+        let mut tag_query = vec![];
+        for i in req.contain_tags.into_iter(){
+            tag_query.push(Value::String(i));
+        }
+        query.push(("tags".to_string(),QueryOption::Contain(tag_query)));
         // query.push(("offset".to_string(),QueryOption::Limit(req.size as i64,req.page as i64)));
         // query.push(("sort".to_string(),QueryOption::Sort(req.sort,-1)));
-        //
-        // let dao = self.dsc.get_dao::<Task>().await;
-        // let result = dao.find(query).await;
-        // match result {
-        //     Ok(item) => {
-        //         return Ok(Response::new(SearchTaskResponse{
-        //             tasks:  item,
-        //             total: 0,
-        //             result: None
-        //         }))
-        //     }
-        //     Err(e) => {}
-        // }
+
+        let dao = self.dsc.get_dao::<Task>().await;
+        let result = dao.find(query,req.page as i64,req.size as i64).await;
+        match result {
+            Ok(item) => {
+                let mut list = vec![];
+                for x in item.0.into_iter() {
+                    list.push(x.to_pb_task())
+                }
+                return Ok(Response::new(SearchTaskResponse{
+                    tasks:  list,
+                    total: item.1 as i32,
+                    result: Self::response_success()
+                }))
+            }
+            Err(e) => {
+                return Ok(Response::new(SearchTaskResponse{
+                    tasks: vec![],
+                    total: 0,
+                    result: Self::response_err_result(500,e)
+                }))
+            }
+        }
 
         return Err(Status::new(Code::Unknown, "not found"));
     }

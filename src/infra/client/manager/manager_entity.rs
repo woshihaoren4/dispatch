@@ -2,6 +2,8 @@ use crate::infra::client::manager::Entity;
 use crate::infra::client::manager::interface:: Dao;
 use crate::infra::client::mongo::{MongoClient, MongoDao};
 use crate::infra::client::QueryOption;
+use crate::infra::client::redis::Redis;
+use crate::infra::election::Election;
 
 // pub struct ClientManagerBuild{
 //     clients : HashMap<String,Arc<dyn Client>>
@@ -13,6 +15,7 @@ use crate::infra::client::QueryOption;
 pub struct DataSourceCenter {
     // clients : HashMap<String,Arc<dyn Client>>
     mongo : Option<MongoClient>,
+    rds : Option<Redis>,
 }
 
 impl DataSourceCenter {
@@ -22,7 +25,9 @@ impl DataSourceCenter {
     pub fn register_mongo(mut self, mongo : MongoClient ) ->Self{
         self.mongo = Some(mongo);self
     }
-
+    pub fn register_redis(mut self, rds : Redis)->Self{
+        self.rds = Some(rds);self
+    }
 
     // 拉取dao
     pub async fn get_dao< 'a, T:Entity<'a> + 'static>(&self) -> Box<dyn Dao<'a,T>>{
@@ -31,6 +36,13 @@ impl DataSourceCenter {
             return Box::new(dao);
         }
         return Box::new(DefaultDao);
+    }
+    #[allow(dead_code)]
+    pub fn get_election_impl<S:ToString>(&self,cluster:S)->impl Election{
+        if let Some(ref rds) = self.rds{
+            return rds.generate_election(cluster)
+        }
+        wd_log::log_panic!("get_election_impl not found any impl")
     }
 }
 
@@ -54,7 +66,7 @@ impl<'a, V> Dao<'a,V> for DefaultDao
     async fn insert_many(&self, _: Vec<V>)->anyhow::Result<Vec<V>>{
         return Err(anyhow::anyhow!("DefaultDao"))
     }
-    async fn find(&self, _:Vec<(String, QueryOption)>) ->anyhow::Result<(Vec<V>,i64)>{
+    async fn find(&self, _:Vec<(String, QueryOption)>,page:i64,size:i64) ->anyhow::Result<(Vec<V>,i64)>{
         return Err(anyhow::anyhow!("DefaultDao"))
     }
 }

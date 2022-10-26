@@ -104,9 +104,10 @@ message SearchTaskRequest{
   TaskStatus status = 4;
   int64 start_time = 5;  //相对创建时间的时间范围
   int64 end_time = 6;
-  int32 size = 7;
-  int32 page = 8;
-  string sort = 9; //default:"create_time desc"
+  repeated string contain_tags = 7; //含有这些标签的任务，含有一个或多个
+  int32 size = 100;
+  int32 page = 101;
+  string sort = 102; //default:"create_time desc"
 }
 message SearchTaskResponse{
   repeated Task tasks = 1;

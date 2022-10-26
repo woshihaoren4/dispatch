@@ -31,6 +31,22 @@ impl Task {
             _=>TaskStatus::Keep,
         }
     }
+    pub fn to_pb_task(self)->pb::Task{
+        pb::Task{
+            task_code: self.task_code,
+            task_name: self.task_name,
+            description: self.description,
+            start_time: self.start_time,
+            end_time: self.end_time,
+            r#type: self.r#type as i32,
+            status: self.status as i32,
+            config: self.config,
+            tags: self.tags,
+            policy: None,
+            sub_tasks: vec![],
+            create_time: self.create_time
+        }
+    }
 }
 
 impl Entity<'_> for Task {

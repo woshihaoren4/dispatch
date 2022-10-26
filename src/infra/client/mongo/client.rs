@@ -1,3 +1,4 @@
+use std::convert::TryInto;
 use futures::{ TryStreamExt};
 use mongodb::bson::{Bson, doc, Document};
 use mongodb::Collection;
@@ -105,7 +106,7 @@ impl<V> MongoDao<V> {
         }
         return Ok(doc)
     }
-    pub fn query_option_to_document(qs:Vec<(String, QueryOption)>)->Document{
+    pub fn query_option_to_document(qs:Vec<(String, QueryOption)>)-> Document{
         let mut d = Document::new();
         for (k,i) in qs.into_iter(){
             match i {
@@ -138,20 +139,24 @@ impl<V> MongoDao<V> {
                     let bs = Self::value_to_bson(lk);
                     if bs != Bson::Null  {
                         if let Some(s) = bs.as_str() {
-                            d.insert(k,doc! {"$regex":format!("/{}/",s)});
+                            d.insert(k,doc! {"$regex":format!("{}",s)});
                         }
 
                     }
                 }
-                // QueryOption::Sort(sort,asc)=>{
-                //     if !sort.is_empty() {
-                //         d.insert("$sort",doc! {sort:asc});
-                //     }
-                // }
-                // QueryOption::Limit(size,page)=>{
-                //     d.insert("$limit",Bson::Int64(size));
-                //     d.insert("$skip",Bson::Int64(size*(page-1)));
-                // }
+                QueryOption::Contain(lk)=>{
+                    let mut tags = vec![];
+                    for i in lk.into_iter(){
+                        let tag = Self::value_to_bson(i);
+                        if tag != Bson::Null{
+                            tags.push(tag)
+                        }
+                    }
+                    if !tags.is_empty() {
+                        d.insert(k,doc! {"$in":tags});
+                    }
+                }
+                _ => {}
             }
         }
         return d;
@@ -205,12 +210,15 @@ where V: Entity<'a>
         }
         return Ok(list)
     }
-    async fn find(&self, qs:Vec<(String, QueryOption)>) ->anyhow::Result<(Vec<V>,i64)>{
+    async fn find(&self, qs:Vec<(String, QueryOption)>,page:i64,size:i64) ->anyhow::Result<(Vec<V>,i64)>{
         let mut list = vec![];
         let query = Self::query_option_to_document(qs);
-        let mut cursor = self.coll.find(query, None).await?;
+        wd_log::log_debug_ln!("mongodb find -> {}",query);
+        let mut  querys = vec![doc! {"$match":query},doc! {"$limit":size},doc!{"$skip":(page-1)*size}];
+        let mut cursor = self.coll.aggregate(querys,None).await?;
         while let Some(doc) = cursor.try_next().await? {
-            list.push(doc);
+            let result = mongodb::bson::from_document(doc)?;
+            list.push( result);
         }
         return Ok((list,0));
     }

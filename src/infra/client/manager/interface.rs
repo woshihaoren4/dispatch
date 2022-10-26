@@ -16,7 +16,7 @@ pub trait Dao <'a, E:Entity<'a>> : Send + Sync {
     async fn find_by_code(&self,code:String)->anyhow::Result<Option<E>>;
     async fn update_by_code(&self,_:E) -> anyhow::Result<u64>;
     async fn insert_many(&self, _: Vec<E>)->anyhow::Result<Vec<E>>;
-    async fn find(&self, _:Vec<(String, QueryOption)>) ->anyhow::Result<(Vec<E>,i64)>;
+    async fn find(&self, _:Vec<(String, QueryOption)>,page:i64,size:i64) ->anyhow::Result<(Vec<E>,i64)>;
 }
 
 pub enum QueryOption{
@@ -25,6 +25,11 @@ pub enum QueryOption{
     LessThan(Value),
     BetweenAnd(Value,Value),
     Like(Value),
-    // Limit(i64,i64),  //size page
-    // Sort(String,i8)
+    Contain(Vec<Value>)
+}
+
+#[async_trait::async_trait]
+pub trait Cache:Send+Sync{
+    async fn set(&self,key:String,value:String)->anyhow::Result<()>;
+    async fn get(&self,key:String)->anyhow::Result<String>;
 }

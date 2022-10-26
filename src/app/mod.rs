@@ -1,3 +1,8 @@
+mod schedule;
+mod controls;
+mod middle;
+mod entity;
+
 use std::sync::Arc;
 use crate::app::controls::Server;
 use crate::app::middle::{ConcurrentInterceptor, LogInterceptor};
@@ -6,9 +11,7 @@ use crate::infra::*;
 use crate::infra::middle::CustomInterceptor;
 use crate::pb;
 
-mod controls;
-mod middle;
-mod entity;
+
 
 pub async fn application_run(_ctx: wd_run::Context, cfg: Config,dsc:Arc<client::DataSourceCenter>) {
     let layer = tower::ServiceBuilder::new()

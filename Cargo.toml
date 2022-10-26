@@ -24,11 +24,14 @@ anyhow = "1.0"
 serde_json = "1.0.85"
 mongodb = "2.3.0"
 lazy_static = "1.4.0"
+mobc-redis = "0.7.0"
+mobc = "0.7.0"
+redis = "0.19.0"
 
 [build-dependencies]
 tonic-build = {version = "0.6",features=["prost","compression"]}
 
-[[bin]] # pb 构建
+[[bin]] # pb 构
 name = "build-proto"
 path = "src/build_grpc.rs"
 
