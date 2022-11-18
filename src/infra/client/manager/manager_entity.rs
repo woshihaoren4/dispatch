@@ -1,7 +1,7 @@
 use crate::infra::client::manager::Entity;
 use crate::infra::client::manager::interface:: Dao;
 use crate::infra::client::mongo::{MongoClient, MongoDao};
-use crate::infra::client::QueryOption;
+use crate::infra::client::{Cache, QueryOption, ShareCenter};
 use crate::infra::client::redis::Redis;
 use crate::infra::election::Election;
 
@@ -41,6 +41,13 @@ impl DataSourceCenter {
     pub fn get_election_impl<S:ToString>(&self,cluster:S)->impl Election{
         if let Some(ref rds) = self.rds{
             return rds.generate_election(cluster)
+        }
+        wd_log::log_panic!("get_election_impl not found any impl")
+    }
+
+    pub fn share_center(&self) ->Box<dyn ShareCenter>{
+        if let Some(ref rds) = self.rds{
+            return Box::new(rds.get_cache())
         }
         wd_log::log_panic!("get_election_impl not found any impl")
     }
