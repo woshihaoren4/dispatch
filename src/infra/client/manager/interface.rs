@@ -1,4 +1,6 @@
 #![allow(dead_code)]
+
+use std::time::Duration;
 use serde::{ Serialize};
 use serde::de::DeserializeOwned;
 use serde_json::Value;
@@ -30,6 +32,24 @@ pub enum QueryOption{
 
 #[async_trait::async_trait]
 pub trait Cache:Send+Sync{
-    async fn set(&self,key:String,value:String)->anyhow::Result<()>;
+    async fn set(&self,key:String,value:String,ttl:Duration)->anyhow::Result<()>;
     async fn get(&self,key:String)->anyhow::Result<String>;
+}
+
+#[derive(Default)]
+pub struct Node{
+    pub min:i32,
+    pub max:i32,
+    pub version:i64,
+}
+
+#[async_trait::async_trait]
+pub trait ShareCenter:Send+Sync{
+    async fn version(&self,key:String)->anyhow::Result<i64>;
+    async fn set_version(&self,key:String,version:i64)->anyhow::Result<()>;
+    async fn nodes(&self,node_cluster:String)->anyhow::Result<Vec<String>>;
+    async fn get_node(&self,key:String)->anyhow::Result<Option<Node>>;
+    async fn add_node(&self, key:String, node:Node) ->anyhow::Result<()>;
+    async fn register_node(&self,cluster:String, key:String) ->anyhow::Result<()>;
+    async fn del_node(&self, key:String) ->anyhow::Result<()>;
 }
