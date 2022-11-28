@@ -37,7 +37,6 @@ impl DataSourceCenter {
         }
         return Box::new(DefaultDao);
     }
-    #[allow(dead_code)]
     pub fn get_election_impl<S:ToString>(&self,cluster:S)->impl Election{
         if let Some(ref rds) = self.rds{
             return rds.generate_election(cluster)

@@ -1,4 +1,5 @@
-mod schedule;
+pub mod schedule;
+
 mod controls;
 mod middle;
 mod entity;

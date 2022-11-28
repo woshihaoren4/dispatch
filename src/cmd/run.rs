@@ -4,6 +4,7 @@ use std::pin::Pin;
 use std::sync::Arc;
 use wd_run::{CmdInfo, Context};
 use crate::infra::client::{DataSourceCenter, MongoClient, Redis};
+use crate::infra::election::{ElectionManager, MasterAndWorker};
 
 pub struct AppRun {}
 
@@ -42,6 +43,13 @@ impl AppRun {
 
         return Ok(Arc::new(dsc))
     }
+    pub fn init_schedule_entity(dsc:Arc<DataSourceCenter>)->impl MasterAndWorker {
+        crate::app::schedule::TaskDispatch::new(dsc).listen()
+    }
+    pub fn start_election_listen(maw:impl MasterAndWorker + 'static,dsc:Arc<DataSourceCenter>,cluster_name:String)->ElectionManager{
+        let e = dsc.get_election_impl(cluster_name);
+        ElectionManager::build(e,maw)
+    }
 
 }
 
@@ -53,9 +61,20 @@ impl wd_run::EventHandle for AppRun {
             wd_log::log_info_ln!("config load success: {}", cfg.to_string());
             //初始化数据源
             let dsc = AppRun::init_database_source(cfg.clone()).await.unwrap();
+            //生成工作实体
+            let sch_entity = AppRun::init_schedule_entity(dsc.clone());
+            //初始化
+            let election = AppRun::start_election_listen(sch_entity,dsc.clone(),cfg.server.name.clone());
+            let close = election.start().await;
+
+
             //启动服务
             crate::app::application_run(ctx.clone(), cfg,dsc).await;
 
+            //停止
+            if let Err(e) = close.stop(std::time::Duration::from_secs(3)).await{
+                wd_log::log_error_ln!("close election error:{}",e);
+            }
             return ctx;
         });
     }

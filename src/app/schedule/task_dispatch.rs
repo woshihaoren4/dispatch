@@ -16,6 +16,31 @@ pub struct TaskDispatch{
 impl Node for TaskDispatch {}
 
 impl TaskDispatch {
+    pub fn new(dsc : Arc<DataSourceCenter>)->TaskDispatch {
+        TaskDispatch{
+            dsc,
+            master_status: Arc::new(Default::default()),
+            worker_status: Arc::new(Default::default())
+        }
+    }
+    pub fn listen(self) -> TaskDispatch {
+        let dsc = self.dsc.clone();
+        let master_status = self.master_status.clone();
+        tokio::spawn(async move{
+            Self::start_master_listen(dsc,master_status).await;
+        });
+        let dsc = self.dsc.clone();
+        let worker_status = self.worker_status.clone();
+        let name = self.name();
+        tokio::spawn(async move{
+            Self::start_worker_listen(dsc,worker_status,name).await;
+        });
+        return self;
+    }
+}
+
+//做业
+impl TaskDispatch {
     pub async fn start_master_listen(dsc : Arc<DataSourceCenter>,master_status: Arc<AtomicI8>) {
         let mut last_nodes:Vec<String> = vec![];
         loop {
@@ -128,7 +153,6 @@ impl TaskDispatch {
             }
         }
     }
-
     pub async fn start_worker_listen(dsc : Arc<DataSourceCenter>,worker_status: Arc<AtomicI8>,name:String){
         loop {
             tokio::time::sleep(Duration::from_secs(3)).await;
@@ -172,6 +196,7 @@ impl TaskDispatch {
                 wd_log::log_error_ln!("更新节点版本信息失败 name={} error={}",name,e);
             }
             //todo 从节点的事件
+            wd_log::log_info_ln!("从节点作业范围：{}-{}",node.min,node.max);
         }
     }
 }

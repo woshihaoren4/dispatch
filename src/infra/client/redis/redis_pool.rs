@@ -4,6 +4,7 @@ use mobc::Connection;
 use mobc_redis::RedisConnectionManager;
 use redis::{AsyncCommands, AsyncIter};
 use crate::infra::client::{Cache, Node, ShareCenter};
+use crate::infra::election::Election;
 
 pub struct Redis{
     pool:mobc::Pool<mobc_redis::RedisConnectionManager>
