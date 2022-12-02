@@ -63,7 +63,7 @@ impl ElectionManager {
             name,
             master,
             election,
-            master_is_worker: false,
+            master_is_worker: false, //fixme 默认应该是true
             handler,
             ele_interval,
         }
