@@ -204,20 +204,24 @@ impl TaskDispatch {
 #[async_trait::async_trait]
 impl MasterAndWorker for TaskDispatch {
     async fn master_start(&self) {
-        self.master_status.store(1, Ordering::Relaxed)
+        self.master_status.store(1, Ordering::Relaxed);
+        wd_log::log_info_ln!("当前节点[{}] 竞选成功",self.name());
     }
 
     async fn master_stop(&self) {
-        self.master_status.store(2, Ordering::Relaxed)
+        self.master_status.store(2, Ordering::Relaxed);
+        wd_log::log_info_ln!("当前节点[{}] 竞选失败",self.name());
     }
 
     async fn worker_start(&self) {
         //循环将主节点版本号添加到自身节点信息中
         //根据自身节点列表 不断将任务发射出去
+        self.worker_status.store(1, Ordering::Relaxed);
         wd_log::log_info_ln!("当前节点[{}] 开始工作",self.name());
     }
 
     async fn worker_stop(&self) {
+        self.worker_status.store(2, Ordering::Relaxed);
         wd_log::log_info_ln!("当前节点[{}] 停止工作",self.name());
     }
 }

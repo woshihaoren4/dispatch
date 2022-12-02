@@ -7,14 +7,16 @@
     <cargoProject FILE="$PROJECT_DIR$/Cargo.toml" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="603ca18f-9ba9-4a5a-a98d-4535cd07062f" name="Changes" comment="y">
+    <list default="true" id="603ca18f-9ba9-4a5a-a98d-4535cd07062f" name="Changes" comment="调试ok">
+      <change afterPath="$PROJECT_DIR$/src/cmd/on_exit.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/mod.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/schedule/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/schedule/mod.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Cargo.lock" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Cargo.toml" beforeDir="false" afterPath="$PROJECT_DIR$/Cargo.toml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/app/schedule/task_dispatch.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/schedule/task_dispatch.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/cmd/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/cmd/mod.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/cmd/run.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/cmd/run.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/infra/client/manager/manager_entity.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/infra/client/manager/manager_entity.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/infra/client/redis/redis_pool.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/infra/client/redis/redis_pool.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/conf/config.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/conf/config.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/infra/election/election_manager.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/infra/election/election_manager.rs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -258,7 +260,6 @@
     </recent_temporary>
   </component>
   <component name="RustProjectSettings">
-    <option name="runExternalLinterOnTheFly" value="true" />
     <option name="toolchainHomeDirectory" value="$USER_HOME$/.cargo/bin" />
     <option name="version" value="2" />
   </component>
@@ -289,7 +290,8 @@
     <MESSAGE value="增加选举模块" />
     <MESSAGE value="完善查询接口" />
     <MESSAGE value="添加主节点和工作节点任务" />
-    <option name="LAST_COMMIT_MESSAGE" value="添加主节点和工作节点任务" />
+    <MESSAGE value="调试ok" />
+    <option name="LAST_COMMIT_MESSAGE" value="调试ok" />
   </component>
   <component name="VgoProject">
     <settings-migrated>true</settings-migrated>

@@ -25,7 +25,7 @@ impl ElectionManagerClose {
         let closing = status.load(Ordering::Relaxed);
         status.fetch_add(1,Ordering::Relaxed);
         let result = tokio::time::timeout(timeout, async move {
-            while status.load(Ordering::Relaxed) == closing {
+            while status.load(Ordering::Relaxed) == closing+1 {
                 tokio::time::sleep(tokio::time::Duration::from_millis(100)).await;
             }
         }).await;
@@ -34,15 +34,24 @@ impl ElectionManagerClose {
             Err(e) => Err(anyhow::anyhow!("close election manager error:{}",e.to_string()))
         }
     }
+    pub fn sync_stop(&self){
+        self.status.fetch_add(1,Ordering::Relaxed);
+        wd_log::log_info_ln!("election stop");
+    }
 }
 
+impl Drop for ElectionManagerClose {
+    fn drop(&mut self) {
+        self.sync_stop();
+    }
+}
 
 impl ElectionManager {
     pub fn build<E,M>(e:E,m:M)->Self
     where E:Election+ 'static,
     M: MasterAndWorker + 'static,
     {
-        let status = Arc::new(AtomicU8::new(1));
+        let status = Arc::new(AtomicU8::new(0));
         let name = m.name();
         let master = Arc::new(Mutex::new(String::new()));
         let election = Arc::new(e);

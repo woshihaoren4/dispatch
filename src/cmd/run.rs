@@ -5,12 +5,16 @@ use std::sync::Arc;
 use wd_run::{CmdInfo, Context};
 use crate::infra::client::{DataSourceCenter, MongoClient, Redis};
 use crate::infra::election::{ElectionManager, MasterAndWorker};
+use async_channel::{Sender,Receiver};
 
-pub struct AppRun {}
+pub struct AppRun {
+    sender:Sender<Box<dyn wd_run::EventHandle + Sync + Send+ 'static>>
+}
 
 impl AppRun {
-    pub fn new() -> Self {
-        AppRun {}
+    pub fn new() -> (Self,Receiver<Box<dyn wd_run::EventHandle + Sync + Send+ 'static>>) {
+        let (sender,receiver) = async_channel::unbounded();
+        (AppRun {sender},receiver)
     }
     pub fn args(&self) -> CmdInfo {
         wd_run::CmdInfo::new("run", "running application").add(
@@ -46,6 +50,15 @@ impl AppRun {
     pub fn init_schedule_entity(dsc:Arc<DataSourceCenter>)->impl MasterAndWorker {
         crate::app::schedule::TaskDispatch::new(dsc).listen()
     }
+    pub async fn add_exit_task<F:Future<Output=()>+Send+Sync+ 'static>(send:Sender<Box<dyn wd_run::EventHandle + Sync + Send+ 'static>>,f:F)->anyhow::Result<()>{
+        send.send(Box::new(|mut x: Context| -> Pin<Box<dyn Future<Output = Context> + Send>> {
+            Box::pin(async move {
+                // f.await;
+                wd_log::log_info_ln!("关闭功能待 wd_run 服务包升级");
+                return x;
+            })
+        })).await?;Ok(())
+    }
     pub fn start_election_listen(maw:impl MasterAndWorker + 'static,dsc:Arc<DataSourceCenter>,cluster_name:String)->ElectionManager{
         let e = dsc.get_election_impl(cluster_name);
         ElectionManager::build(e,maw)
@@ -55,6 +68,7 @@ impl AppRun {
 
 impl wd_run::EventHandle for AppRun {
     fn handle(&self, ctx: Context) -> Pin<Box<dyn Future<Output = Context> + Send>> {
+        let exit_channel = self.sender.clone();
         return Box::pin(async move {
             //加载配置文件
             let cfg = AppRun::load_config_ctx(&ctx).await;
@@ -66,15 +80,16 @@ impl wd_run::EventHandle for AppRun {
             //初始化
             let election = AppRun::start_election_listen(sch_entity,dsc.clone(),cfg.server.name.clone());
             let close = election.start().await;
-
-
+            // wd_log::res_panic!(AppRun::add_exit_task(exit_channel,async move{
+            //     //停止
+            //     if let Err(e) = close.stop(std::time::Duration::from_secs(3)).await{
+            //         wd_log::log_error_ln!("close election error:{}",e);
+            //     }
+            // }).await);
             //启动服务
             crate::app::application_run(ctx.clone(), cfg,dsc).await;
 
-            //停止
-            if let Err(e) = close.stop(std::time::Duration::from_secs(3)).await{
-                wd_log::log_error_ln!("close election error:{}",e);
-            }
+
             return ctx;
         });
     }
