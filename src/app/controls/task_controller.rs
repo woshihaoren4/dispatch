@@ -89,18 +89,19 @@ impl TaskManagerServices for super::Server {
             2 => {} //UpdateTaskAction::UpdateTaskInfo
             3 => {
                 //UpdateTaskAction::AppendSubtasks
-                let ast =
-                    match req.update_content.unwrap() {
-                        UpdateContent::SubTasks(subs) => subs,
-                        _ => return Ok(Response::new(UpdateTaskResponse {
+                let ast = match req.update_content.unwrap() {
+                    UpdateContent::SubTasks(subs) => subs,
+                    _ => {
+                        return Ok(Response::new(UpdateTaskResponse {
                             result: Server::response_err_result(
                                 400,
                                 format!(
                                     "active is append sub task,but content is not AppendSubTask"
                                 ),
                             ),
-                        })),
-                    };
+                        }))
+                    }
+                };
                 let sub_task_list = SubTask::from(ast, req.task_code);
                 let dao = self.dsc.get_dao().await;
                 let result = dao.insert_many(sub_task_list).await;

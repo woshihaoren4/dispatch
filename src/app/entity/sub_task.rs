@@ -15,6 +15,7 @@ pub struct SubTask {
     pub last_dispatch_time: i64,
     pub version: u32,
     pub task_code: String,
+    pub partition: i32,
 }
 
 impl Entity<'_> for SubTask {
@@ -35,6 +36,7 @@ impl SubTask {
     pub fn from(ast: AppendSubTask, task_code: String) -> Vec<SubTask> {
         let mut sts = vec![];
         let utc = Utc::now().timestamp();
+        let partition = util::rand_int32();
         for i in ast.sub_tasks.into_iter() {
             let st = SubTask {
                 sub_task_code: util::sony_flake_id().to_string(),
@@ -46,6 +48,7 @@ impl SubTask {
                 last_dispatch_time: 0,
                 version: 0,
                 task_code: task_code.clone(),
+                partition,
             };
             sts.push(st);
         }

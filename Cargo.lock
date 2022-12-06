@@ -392,6 +392,7 @@ dependencies = [
  "mongodb",
  "prost",
  "prost-types",
+ "rand",
  "redis",
  "serde",
  "serde_json",
