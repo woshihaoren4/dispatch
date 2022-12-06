@@ -8,6 +8,19 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="603ca18f-9ba9-4a5a-a98d-4535cd07062f" name="Changes" comment="调试选主过程">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/controls/task_controller.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/controls/task_controller.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/schedule/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/schedule/mod.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/schedule/task_dispatch.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/schedule/task_dispatch.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/cmd/on_exit.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/cmd/on_exit.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/cmd/run.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/cmd/run.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/conf/config.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/conf/config.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/infra/client/manager/interface.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/infra/client/manager/interface.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/infra/client/manager/manager_entity.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/infra/client/manager/manager_entity.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/infra/client/mongo/client.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/infra/client/mongo/client.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/infra/client/redis/redis_election.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/infra/client/redis/redis_election.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/infra/client/redis/redis_pool.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/infra/client/redis/redis_pool.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/infra/election/election_interface.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/infra/election/election_interface.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/infra/election/election_manager.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/infra/election/election_manager.rs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />

@@ -1,4 +1,5 @@
 use crate::app::middle::LogInterceptor;
+use crate::infra::middle::LayerHyperInterceptor;
 use hyper::header::HeaderValue;
 use hyper::{Body, Request, Response};
 use std::str::FromStr;
@@ -6,7 +7,6 @@ use std::sync::atomic::{AtomicU16, Ordering};
 use tonic::body::BoxBody;
 use tonic::codegen::http::HeaderMap;
 use wd_run::Context;
-use crate::infra::middle::LayerHyperInterceptor;
 
 const CURRENT_COUNT: &'static str = "dispatch_grpc_current_count";
 

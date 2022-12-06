@@ -1,5 +1,5 @@
-mod task;
 mod sub_task;
+mod task;
 
-pub use task::Task;
 pub use sub_task::SubTask;
+pub use task::Task;

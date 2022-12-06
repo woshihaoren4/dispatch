@@ -1,18 +1,18 @@
 use crate::pb::CommonResult;
 
-impl super::Server{
-    pub fn response_success() ->Option<CommonResult>{
-        Some(CommonResult{
+impl super::Server {
+    pub fn response_success() -> Option<CommonResult> {
+        Some(CommonResult {
             code: 0,
             message: "success".to_string(),
-            payload: None
+            payload: None,
         })
     }
-    pub fn response_err_result<S:ToString>(code:i32,s:S)->Option<CommonResult>{
-        Some(CommonResult{
+    pub fn response_err_result<S: ToString>(code: i32, s: S) -> Option<CommonResult> {
+        Some(CommonResult {
             code,
             message: s.to_string(),
-            payload: None
+            payload: None,
         })
     }
 }

@@ -32,7 +32,7 @@ macro_rules! field_generate {
 
 field_generate!(Server;
     name,String,String::from("dispatch"),"Server::name";
-    host_port,String,String::from("0.0.0.0:6666"),"Server::host_port");
+    host_port,String,String::from("0.0.0.0:670"),"Server::host_port");
 
 field_generate!(MongoDb;
     url,String,String::from("mongodb://dispatch_admin:1443965173@10.37.129.190:27019/dispatch"),"MongoDb::url";
@@ -53,7 +53,6 @@ pub enum DataSourceDriver {
 
 field_generate!(DataSource;
     driver,DataSourceDriver,DataSourceDriver::Mongo(MongoDb::default()),"DataSource::driver");
-
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Config {

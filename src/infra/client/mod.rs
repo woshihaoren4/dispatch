@@ -1,7 +1,7 @@
-mod mongo;
 mod manager;
+mod mongo;
 mod redis;
 
+pub use self::redis::*;
 pub use manager::*;
 pub use mongo::*;
-pub use self::redis::*;

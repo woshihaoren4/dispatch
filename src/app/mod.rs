@@ -1,20 +1,22 @@
 pub mod schedule;
 
 mod controls;
-mod middle;
 mod entity;
+mod middle;
 
-use std::sync::Arc;
 use crate::app::controls::Server;
 use crate::app::middle::{ConcurrentInterceptor, LogInterceptor};
 use crate::conf::Config;
-use crate::infra::*;
 use crate::infra::middle::CustomInterceptor;
+use crate::infra::*;
 use crate::pb;
+use std::sync::Arc;
 
-
-
-pub async fn application_run(_ctx: wd_run::Context, cfg: Config,dsc:Arc<client::DataSourceCenter>) {
+pub async fn application_run(
+    _ctx: wd_run::Context,
+    cfg: Config,
+    dsc: Arc<client::DataSourceCenter>,
+) {
     let layer = tower::ServiceBuilder::new()
         .timeout(std::time::Duration::from_secs(60))
         // .concurrency_limit(100)
