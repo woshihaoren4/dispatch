@@ -1,14 +1,17 @@
+use crate::app::schedule::Allocation;
 use crate::infra::client::DataSourceCenter;
 use crate::pb::TaskStatus;
 use std::sync::Arc;
 
+#[derive(Clone)]
 pub struct Server {
     pub dsc: Arc<DataSourceCenter>,
+    alloc: Arc<Allocation>,
 }
 
 impl Server {
-    pub fn new(dsc: Arc<DataSourceCenter>) -> Self {
-        return Self { dsc };
+    pub fn new(dsc: Arc<DataSourceCenter>, alloc: Arc<Allocation>) -> Self {
+        return Self { dsc, alloc };
     }
 }
 

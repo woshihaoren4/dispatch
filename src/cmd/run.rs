@@ -1,3 +1,4 @@
+use crate::app::schedule::Allocation;
 use crate::conf::{Config, DataSourceDriver};
 use crate::infra::client::{DataSourceCenter, MongoClient, Redis};
 use crate::infra::election::{ElectionManager, MasterAndWorker};
@@ -50,8 +51,12 @@ impl AppRun {
 
         return Ok(Arc::new(dsc));
     }
-    pub fn init_schedule_entity(dsc: Arc<DataSourceCenter>) -> impl MasterAndWorker {
-        crate::app::schedule::TaskDispatch::new(dsc).listen()
+    pub fn init_schedule_entity(
+        dsc: Arc<DataSourceCenter>,
+    ) -> (impl MasterAndWorker, Arc<Allocation>) {
+        let maw = crate::app::schedule::TaskDispatch::new(dsc).listen();
+        let alloc = maw.alloc.clone();
+        (maw, alloc)
     }
     // pub async fn add_exit_task<F:Future<Output=()>+Send+Sync+ 'static>(send:Sender<Box<dyn wd_run::EventHandle + Sync + Send+ 'static>>,f:F)->anyhow::Result<()>{
     //     send.send(Box::new(|x: Context| -> Pin<Box<dyn Future<Output = Context> + Send>> {
@@ -82,7 +87,7 @@ impl wd_run::EventHandle for AppRun {
             //初始化数据源
             let dsc = AppRun::init_database_source(cfg.clone()).await.unwrap();
             //生成工作实体
-            let sch_entity = AppRun::init_schedule_entity(dsc.clone());
+            let (sch_entity, alloc) = AppRun::init_schedule_entity(dsc.clone());
             //初始化
             let election =
                 AppRun::start_election_listen(sch_entity, dsc.clone(), cfg.server.name.clone());
@@ -94,7 +99,7 @@ impl wd_run::EventHandle for AppRun {
             //     }
             // }).await);
             //启动服务
-            crate::app::application_run(ctx.clone(), cfg, dsc).await;
+            crate::app::application_run(ctx.clone(), cfg, dsc, alloc).await;
 
             return ctx;
         });

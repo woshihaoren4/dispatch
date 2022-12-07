@@ -8,6 +8,7 @@ use std::time::Duration;
 
 #[derive(Clone)]
 pub struct TaskDispatch {
+    pub alloc: Arc<super::Allocation>,
     node_name: String,
     dsc: Arc<DataSourceCenter>,
     master_status: Arc<AtomicI8>,
@@ -23,7 +24,9 @@ impl Node for TaskDispatch {
 impl TaskDispatch {
     pub fn new(dsc: Arc<DataSourceCenter>) -> TaskDispatch {
         let node_name = util::sony_flake_id().to_string();
+        let alloc = Arc::new(super::Allocation::default());
         TaskDispatch {
+            alloc,
             node_name,
             dsc,
             master_status: Arc::new(Default::default()),
@@ -39,8 +42,9 @@ impl TaskDispatch {
         let dsc = self.dsc.clone();
         let worker_status = self.worker_status.clone();
         let name = self.name();
+        let alloc = self.alloc.clone();
         tokio::spawn(async move {
-            Self::start_worker_listen(dsc, worker_status, name).await;
+            Self::start_worker_listen(dsc, worker_status, name, alloc).await;
         });
         return self;
     }
@@ -202,6 +206,7 @@ impl TaskDispatch {
         dsc: Arc<DataSourceCenter>,
         worker_status: Arc<AtomicI8>,
         name: String,
+        alloc: Arc<super::Allocation>,
     ) {
         loop {
             tokio::time::sleep(Duration::from_secs(3)).await;
@@ -262,8 +267,9 @@ impl TaskDispatch {
             if let Err(e) = share.set_version(name.clone(), last_version).await {
                 wd_log::log_error_ln!("更新节点版本信息失败 name={} error={}", name, e);
             }
-            //todo 从节点的事件
-            wd_log::log_info_ln!("从节点作业范围：{}-{}", node.min, node.max);
+            //todo 需要抽成接口方便扩展
+            alloc.set_scope(node.min, node.max);
+            // wd_log::log_info_ln!("从节点作业范围：{}-{}", node.min, node.max);
         }
     }
 }
