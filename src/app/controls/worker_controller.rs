@@ -25,6 +25,7 @@ impl WorkersSchedulingServices for Server {
         &self,
         request: Request<PullTaskRequest>,
     ) -> Result<Response<PullTaskResponse>, Status> {
+        //拉取在自己工作区间的任务
         return Err(Status::new(Code::Unknown, "todo"));
     }
 
