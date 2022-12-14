@@ -401,6 +401,7 @@ dependencies = [
  "tonic-build",
  "tower",
  "wd_log",
+ "wd_pool",
  "wd_run",
  "wd_sonyflake",
 ]
@@ -2235,6 +2236,19 @@ checksum = "93c9e9d83964a485ec2edca0eaf9bc1b9be3df2d9a77c47cea5141af8ac7a944"
 dependencies = [
  "chrono",
  "lazy_static",
+]
+
+[[package]]
+name = "wd_pool"
+version = "0.0.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a02bd17720c82694ecbddfb8e2e966aad297b075a91e773dd804d3e1321faad1"
+dependencies = [
+ "anyhow",
+ "async-channel",
+ "async-trait",
+ "tokio",
+ "wd_log",
 ]
 
 [[package]]
