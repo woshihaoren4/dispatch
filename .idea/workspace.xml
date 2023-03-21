@@ -7,13 +7,8 @@
     <cargoProject FILE="$PROJECT_DIR$/Cargo.toml" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="603ca18f-9ba9-4a5a-a98d-4535cd07062f" name="Changes" comment="增加pool模块">
+    <list default="true" id="603ca18f-9ba9-4a5a-a98d-4535cd07062f" name="Changes" comment="更新">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Cargo.lock" beforeDir="false" afterPath="$PROJECT_DIR$/Cargo.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Cargo.toml" beforeDir="false" afterPath="$PROJECT_DIR$/Cargo.toml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/infra/pool/mod.rs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/infra/pool/pool_entity.rs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/infra/pool/pool_interface.rs" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -120,7 +115,7 @@
     &quot;org.rust.cargo.project.model.PROJECT_DISCOVERY&quot;: &quot;true&quot;,
     &quot;org.rust.disableDetachedFileInspection/Users/bytedance/project/work/github/dispatch/src/app/entity/task.rs&quot;: &quot;true&quot;,
     &quot;org.rust.disableDetachedFileInspection/Users/bytedance/project/work/github/dispatch/src/infra/pool/pool_test.rs&quot;: &quot;true&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;watcher.settings&quot;
+    &quot;settings.editor.selected.configurable&quot;: &quot;google.protobuf.language&quot;
   }
 }</component>
   <component name="RecentsManager">
@@ -298,7 +293,8 @@
     <MESSAGE value="添加任务权重" />
     <MESSAGE value="增加区间计数" />
     <MESSAGE value="增加pool模块" />
-    <option name="LAST_COMMIT_MESSAGE" value="增加pool模块" />
+    <MESSAGE value="更新" />
+    <option name="LAST_COMMIT_MESSAGE" value="更新" />
   </component>
   <component name="VgoProject">
     <settings-migrated>true</settings-migrated>
