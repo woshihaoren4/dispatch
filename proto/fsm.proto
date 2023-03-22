@@ -81,7 +81,7 @@ message WorkFlowFSM{
   string id = 1;   //流程id
   string name = 2;
   string description = 3;
-  string app_id = 4; //app id
+//  string app_id = 4; //app id
   repeated Status ss = 5; //状态集
   repeated Action actions = 6; //动作集
   repeated Action start_action = 7; //起始动作 最少一个

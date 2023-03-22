@@ -30,7 +30,7 @@ message PingResponse{
 
 message EventRequest{
   string id = 1;
-  string app_id = 2;
+//  string app_id = 2;
   string source = 3;
   string spec_version = 4;
   string type = 5;
