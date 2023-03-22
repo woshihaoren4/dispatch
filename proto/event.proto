@@ -1,0 +1,51 @@
+syntax = "proto3";
+
+package pb;
+
+import "google/protobuf/struct.proto";
+import "google/api/annotations.proto";
+
+
+
+service EventHandle{
+  rpc ping(PingRequest)returns(PingResponse){
+    option (google.api.http) = {
+      get: "/api/v1/event/ping"
+    };
+  }
+  rpc distribute(EventRequest)returns(EventResponse){
+    option (google.api.http) = {
+      post: "/api/v1/event/distribute"
+      body: "*"
+    };
+  }
+}
+
+message PingRequest{
+  string request_id = 1;
+}
+message PingResponse{
+  bool health = 1;
+}
+
+message EventRequest{
+  string id = 1;
+  string app_id = 2;
+  string source = 3;
+  string spec_version = 4;
+  string type = 5;
+  string data_content_type = 6;
+  string data_schema = 7;
+  string subject = 8;
+  int64 time = 9;
+  map<string,string> extend = 99;
+  google.protobuf.Struct data = 100;
+}
+
+message EventResponse{
+  int32 code = 1;
+  string message = 2;
+
+  string data_schema = 6;
+  google.protobuf.Struct result = 100;
+}

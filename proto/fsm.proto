@@ -1,0 +1,101 @@
+syntax = "proto3";
+
+package pb;
+
+import "google/protobuf/struct.proto";
+
+message Status{
+  //节点id
+  string id = 1;
+  //节点名称
+  string name = 2;
+  //节点描述
+  string description = 3;
+}
+
+message Action{
+  string event_type = 1;
+  string name = 2;
+  string description = 3;
+  //起始节点，到达节点
+  string start_status_id = 4;
+  string end_status_id = 5;
+}
+
+message EventConsumerScript{}
+message EventConsumerGrpc{}
+message EventConsumerHttp{}
+message EventConsumerAmqp{}
+message EventConsumerRocketMq{}
+message EventConsumerKafka{}
+message EventConsumerMqtt{}
+
+message EventConsumer{
+  oneof kind{
+    EventConsumerHttp http = 1;
+    EventConsumerGrpc grpc = 2;
+    EventConsumerAmqp amqp = 3;
+    EventConsumerRocketMq rocketmq = 4;
+    EventConsumerKafka kafka = 5;
+    EventConsumerMqtt mqtt = 6;
+    EventConsumerScript script = 7;
+  }
+  //消费者的唯一标识
+  string id = 100;
+  bool sync=101; //是否同步处理 默认异步
+  EventFilter filter = 102; //事件过滤器
+}
+
+message EventFilter{
+//  string des_status_id = 1;
+  string source = 3;  // *
+  string spec_version = 4; // *
+  string type = 5; // not is null
+  string data_content_type = 6; // *
+  string data_schema = 7; // *
+  string subject = 8; // *
+}
+
+enum RetryPolicyModule{
+  BACKOFF = 0;  //默认backoff模式
+}
+
+message RetryPolicy{
+  //总超时时间 单位s
+  uint32 timeout = 1;
+  //尝试次数
+  uint32 max_count = 2;
+  //重试模式
+  RetryPolicyModule module = 3;
+  //动作执行失败时兜底处理方案
+  EventConsumer default_consumer = 4;
+}
+
+enum FSMStatus{
+  Create = 0;  //新建
+  Release = 1; //发布
+  Offline = 2; //下线
+}
+
+message WorkFlowFSM{
+  string id = 1;   //流程id
+  string name = 2;
+  string description = 3;
+  string app_id = 4; //app id
+  repeated Status ss = 5; //状态集
+  repeated Action actions = 6; //动作集
+  repeated Action start_action = 7; //起始动作 最少一个
+//  repeated Status end_ss = 7; //结束状态 可以为空
+  FSMStatus status = 8;
+  RetryPolicy default_retry_policy = 9; //重试策略
+  repeated EventConsumer regedit = 10; //消费者注册表
+//  map<string,RetryPolicy> action_retry_policy = 7; //动作重试策略
+}
+
+service WorkFlowManager{
+  //查询
+  //创建
+  //修改
+  //发布
+  //作废
+}
