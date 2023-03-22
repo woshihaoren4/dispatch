@@ -67,8 +67,6 @@ message RetryPolicy{
   uint32 max_count = 2;
   //重试模式
   RetryPolicyModule module = 3;
-  //动作执行失败时兜底处理方案
-  EventConsumer default_consumer = 4;
 }
 
 enum FSMStatus{
@@ -89,7 +87,9 @@ message WorkFlowFSM{
   FSMStatus status = 8;
   RetryPolicy default_retry_policy = 9; //重试策略
   repeated EventConsumer regedit = 10; //消费者注册表
-//  map<string,RetryPolicy> action_retry_policy = 7; //动作重试策略
+  //执行失败的处理逻辑
+  EventConsumer error_handler = 11;
+  // map<string,RetryPolicy> action_retry_policy = 7; //动作重试策略
 }
 
 service WorkFlowManager{

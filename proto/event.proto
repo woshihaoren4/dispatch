@@ -39,13 +39,12 @@ message EventRequest{
   string subject = 8;
   int64 time = 9;
   map<string,string> extend = 99;
-  google.protobuf.Struct data = 100;
+  bytes data = 100;
 }
 
 message EventResponse{
-  int32 code = 1;
+  int32 code = 1;  //0:success 其他:错误码
   string message = 2;
 
-  string data_schema = 6;
-  google.protobuf.Struct result = 100;
+  optional EventRequest result = 3;
 }
